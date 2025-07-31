@@ -29,7 +29,7 @@ app.post("/add-new-review", (req, res) => {
 
     if (!postDescription || !score) {
         console.log("u didnt fill soemthing out properly try agn")
-        res.status(400).send('bruh. ');
+        res.status(400).send('some info was not completed... try again');
     } else {
         try {
             pool
@@ -40,7 +40,7 @@ app.post("/add-new-review", (req, res) => {
                 res.status(200).send('ok u got it');
             })
         } catch (error) {
-            res.status(500).send('u suck');
+            res.status(500).send('something else went wrong');
         }
     } 
 });
