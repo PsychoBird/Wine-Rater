@@ -1,0 +1,35 @@
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+    <div class="login-container">
+        <div class="login-box">
+            <h1 class="logo">Corked 🍷</h1>
+            <form class="login-form">
+                <input id="username" type="text" placeholder="Username" required />
+                <input id="password" type="password" placeholder="Password" required />
+                <p id="error"></p>
+                <button id="login" type="submit">Log In</button>
+            </form>
+            <p class="signup-text">Don't have an account? <a href="#">Sign up</a></p>
+        </div>
+    </div>
+</body>
+<script>
+    let login = document.getElementById("login");
+    let error = document.getElementById("error");
+    let username = document.getElementById("username");
+    let password = document.getElementById("password");
+
+    login.addEventListener("click", (event) => {
+        if (!username.value || !password.value) {
+            error.textContent = "Username or password missing!";
+            //return;
+        }
+        window.location.href = "reviews.html"
+    })
+</script>
+</html>
