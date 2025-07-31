@@ -1,0 +1,7 @@
+{
+	"user": "USERNAME",
+	"host": "localhost",
+	"database": "corked",
+	"password": "PASSWORD",
+	"port": 5432
+}
