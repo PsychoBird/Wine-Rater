@@ -10,10 +10,18 @@ CREATE TABLE IF NOT EXISTS users (
     password VARCHAR(255) NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS saved_wines (
+    id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL,
+    country_origin TEXT NOT NULL,
+    year INT NOT NULL,
+    description TEXT
+);
+
 CREATE TABLE IF NOT EXISTS reviews (
     id SERIAL PRIMARY KEY,
     user_id INT NOT NULL,
     wine_id INT NOT NULL,
-    post_description TEXT,
-    score INT NOT NULL CHECK (score >= 0 AND score <= 10),
+    description TEXT,
+    score INT NOT NULL CHECK (score >= 0 AND score <= 10)
 );

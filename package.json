@@ -1,8 +1,8 @@
 {
   "scripts": {
     "start": "cd app; node server.js",
-    "setup": "psql --username postgres -f setup.sql",
-    "cleanup": "psql --username postgres -f cleanup.sql"
+    "setup": "psql --username postgres -f scripts/setup.sql",
+    "cleanup": "psql --username postgres -f scripts/cleanup.sql"
   },
   "dependencies": {
     "express": "^5.1.0",
