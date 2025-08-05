@@ -58,7 +58,6 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow: hidden;
     padding: 20px;
 }
 
@@ -152,6 +151,15 @@ body {
 
 /* Reviews.html */
 
+.review-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+    margin-top: 120px;
+}
+
 .review-header-box {
     margin-top: 15px;
     margin-bottom: 15px;
@@ -165,46 +173,32 @@ body {
 }
 
 .review-box {
-    background-color: rgb(41, 9, 12);
+    background-color: rgb(31, 4, 7);
     border-radius: 16px;
     padding: 30px;
+    width: 100%;
     box-shadow: 0 8px 20px rgba(41, 9, 12);
     text-align: center;
-    top: 0;
-    position: fixed
 }
 
-.image-box {
-    width: 150px;
-    height: 150px;
-    object-fit: cover;
-    border-radius: 8px;
-    display: block;
-    margin: 0 auto;
+.review-meta {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: #ddd;
+    display: flex;
+    justify-content: space-between;
 }
 
-/* Header.html */
-
-#site-header.loading {
-    visibility: hidden;
+.review-meta .score,
+.review-meta .user-id {
+    padding: 4px 8px;
 }
 
-#site-header.loaded {
-    visibility: visible;
+.review-box b {
+    font-size: 1.8rem;
+    margin-bottom: 10px;
 }
 
-#site-header {
-    width: 100%;
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 1000;
-    background-color: rgb(41, 9, 12);
-    padding: 1rem;
-}
-
-#site-header nav a {
-  text-decoration: none;
-  cursor: pointer;
-  color: #fff;
+.review-box p {
+    margin-top: 15px;
 }
