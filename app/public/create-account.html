@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+    <div class="login-container">
+        <div class="login-box">
+            <h1 class="logo">Create Your Account</h1>
+            <form class="login-form">
+                <p>First Name</p>
+                <input id="first-name" type="text" required />
+                <p>Last Name</p>
+                <input id="last-name" type="text" required />
+                <p>Email</p>
+                <input id="email" type="text" required />
+                <p>Username</p>
+                <input id="username" type="text" required />
+                <p>Password</p>
+                <input id="password" type="password" required />
+                <button id="sign-up" type="submit">Sign up</button>
+                <span id="error" class="user-login-error"></span>
+            </form>
+            <p class="signup-text">Already have an account? <a href="./index.html">Log In</a></p>
+        </div>
+    </div>
+</body>
+<script>
+    let signUpButton = document.getElementById("sign-up");
+    let errorSpan = document.getElementById("error");
+
+    signUpButton.addEventListener("click", () => {
+        event.preventDefault();
+
+        let requiredInputs = Array.from(document.querySelectorAll(".login-form input[required]"));
+        let inputsFilled = true;
+
+        requiredInputs.forEach(input => {
+            if (!input.value.trim()) {
+                inputsFilled = false;
+            }
+        })
+
+        if (!inputsFilled) {
+            errorSpan.textContent = "Please fill out all fields before signing up.";
+            return;
+        }
+        errorSpan.textContent = "";
+
+        let firstName = document.getElementById("first-name").value.trim();
+        let lastName = document.getElementById("last-name").value.trim();
+        let email = document.getElementById("email").value.trim();
+        let username = document.getElementById("username").value.trim();
+        let password = document.getElementById("password").value.trim();
+
+        fetch(`/create-account`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            body: JSON.stringify({
+                firstName,
+                lastName,
+                email,
+                username,
+                password
+            })
+        })
+        .then(response => {
+            if (response.ok) {
+                return response;
+            } else {
+                throw response;
+            }
+        })
+        .then(data => {
+            console.log("Successfully created account")
+            console.log(data);
+        })
+        .catch(error => {
+            console.log("Error with creating account")
+            console.log(error);
+        })
+    });
+</script>
+</html>

@@ -84,7 +84,6 @@ body {
 }
 
 .login-form input {
-    width: 100%;
     padding: 12px;
     margin-bottom: 12px;
     border: none;
@@ -108,7 +107,6 @@ body {
 
 /* Login Button */
 .login-form button {
-    width: 100%;
     padding: 12px;
     margin-top: 8px;
     background-color: #a85e5e;
@@ -123,6 +121,19 @@ body {
 
 .login-form button:hover {
     background-color: #843b3b;
+}
+
+.login-form input,
+.login-form button {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.login-form p {
+    margin: 0 0 8px 0;
+    text-align: left;
+    font-weight: bold;
+    color: #f5d6ba;
 }
 
 .signup-text {
