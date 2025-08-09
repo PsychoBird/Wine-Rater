@@ -1,11 +1,12 @@
 const express = require("express");
 const pg = require("pg");
-const app = express();
+const path = require("path");
+const env = require("../env.json");
 
+const app = express();
 const port = 3000;
 const hostname = "localhost";
 
-const env = require("../env.json");
 const Pool = pg.Pool;
 const pool = new Pool(env);
 
@@ -14,7 +15,15 @@ app.use(express.json());
 
 pool.connect().then(function () {
     console.log(`Connected to database ${env.database}`);
-  });
+});
+
+// Server pages
+
+app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "public", "login.html"))
+});
+
+// Endpoints for application logic
 
 app.post("/add-new-review", (req, res) => {
     let body = req.body;
@@ -47,5 +56,4 @@ app.post("/add-new-review", (req, res) => {
 
 app.listen(port, hostname, () => {
     console.log(`http://${hostname}:${port}`);
-  });
-  
+});
