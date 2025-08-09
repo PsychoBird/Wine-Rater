@@ -48,7 +48,7 @@ function validateLogin(body) {
 app.post("/create-account", async (req, res) => {
   let { body } = req;
   if (!validateLogin(body)) {
-    return res.sendStatus(400); 
+    return res.status(400).send("your username or password doesn't meet the requirements.."); 
   }
   let { firstName, lastName, email, username, password } = body;
   console.log(username, password);
@@ -61,12 +61,12 @@ app.post("/create-account", async (req, res) => {
     );
   } catch (error) {
     console.log("SELECT FAILED", error);
-    return res.sendStatus(500); 
+    return res.status(500).send(error); 
   }
   // username exists in database 
   if (result.rows.length !== 0) {
     console.log("username already exists in the database");
-    return res.sendStatus(400); 
+    return res.status(400).send("username already exists in the database, pick a different one"); 
   }
 
   // TODO validate username/password meet requirements
@@ -75,7 +75,7 @@ app.post("/create-account", async (req, res) => {
     hash = await argon2.hash(password);
   } catch (error) {
     console.log("HASH FAILED", error);
-    return res.sendStatus(500); // TODO
+    return res.status(500).send(error);
   }
   console.log(hash); // TODO just for debugging
   try {
@@ -88,17 +88,17 @@ app.post("/create-account", async (req, res) => {
     ]);
   } catch (error) {
     console.log("INSERT FAILED", error);
-    return res.sendStatus(500); // TODO
+    return res.status(500).send(error);
   }
   // TODO automatically log people in when they create account, because why not?
-  return res.status(200).send(); // TODO
+  return res.status(200).send("you're logged in!"); 
 });
 
 app.post("/login", async (req, res) => {
   let { body } = req;
   // TODO validate body is correct shape and type
   if (!validateLogin(body)) {
-    return res.sendStatus(400); // TODO
+    return res.status(400).send("your username or password doesn't meet the requirements..");
   }
   let { username, password } = body;
   let result;
@@ -109,12 +109,12 @@ app.post("/login", async (req, res) => {
     );
   } catch (error) {
     console.log("SELECT FAILED", error);
-    return res.sendStatus(500); // TODO
+    return res.status(500).send(error);
   }
   // username doesn't exist
   if (result.rows.length === 0) {
     console.log("username doesn't exist.. try again")
-    return res.sendStatus(400); // TODO
+    return res.status(400).send("username doesn't exist.."); 
   }
   let hash = result.rows[0].password;
   console.log(username, password, hash);
@@ -123,19 +123,19 @@ app.post("/login", async (req, res) => {
     verifyResult = await argon2.verify(hash, password);
   } catch (error) {
     console.log("VERIFY FAILED", error);
-    return res.sendStatus(500); // TODO
+    return res.status(500).send(error); 
   }
   // password didn't match
   console.log(verifyResult);
   if (!verifyResult) {
     console.log("seems like you have the wrong password.. try again");
-    return res.sendStatus(400); // TODO
+    return res.status(400).send("seems like you have the wrong password.. "); 
   }
   // generate login token, save in cookie
   let token = makeToken();
   console.log("Generated token", token);
   tokenStorage[token] = username;
-  return res.cookie("token", token, cookieOptions).send(); // TODO
+  return res.cookie("token", token, cookieOptions).send("this is the token"); 
 });
 
 /* middleware; check if login token in token storage, if not, 403 response */
@@ -143,7 +143,7 @@ let authorize = (req, res, next) => {
   let { token } = req.cookies;
   console.log(token, tokenStorage);
   if (token === undefined || !tokenStorage.hasOwnProperty(token)) {
-    return res.sendStatus(403); // TODO
+    return res.status(403).send(error);
   }
   next();
 };
@@ -152,16 +152,16 @@ app.post("/logout", (req, res) => {
   let { token } = req.cookies;
   if (token === undefined) {
     console.log("Already logged out");
-    return res.sendStatus(400); // TODO
+    return res.status(400).send("already logged out");
   }
   if (!tokenStorage.hasOwnProperty(token)) {
     console.log("Token doesn't exist");
-    return res.sendStatus(400); // TODO
+    return res.status(400).send("Token doesn't exist");
   }
   console.log("Before", tokenStorage);
   delete tokenStorage[token];
   console.log("Deleted", tokenStorage);
-  return res.clearCookie("token", cookieOptions).send();
+  return res.clearCookie("token", cookieOptions).send("token has been deleted");
 });
 
 app.get("/public", (req, res) => {
