@@ -91,7 +91,7 @@ app.post("/create-account", async (req, res) => {
     return res.status(500).send(error);
   }
   // TODO automatically log people in when they create account, because why not?
-  return res.status(200).send("you're logged in!"); 
+  return res.status(200).send("congrats! ur account is made and you're logged in!"); 
 });
 
 app.post("/login", async (req, res) => {
@@ -135,7 +135,7 @@ app.post("/login", async (req, res) => {
   let token = makeToken();
   console.log("Generated token", token);
   tokenStorage[token] = username;
-  return res.cookie("token", token, cookieOptions).send("this is the token"); 
+  return res.cookie("token", token, cookieOptions).send("logged in, token made"); 
 });
 
 /* middleware; check if login token in token storage, if not, 403 response */
