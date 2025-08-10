@@ -173,3 +173,38 @@ body {
     top: 0;
     position: fixed
 }
+
+.image-box {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+    display: block;
+    margin: 0 auto;
+}
+
+/* Header.html */
+
+#site-header.loading {
+    visibility: hidden;
+}
+
+#site-header.loaded {
+    visibility: visible;
+}
+
+#site-header {
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    background-color: rgb(41, 9, 12);
+    padding: 1rem;
+}
+
+#site-header nav a {
+  text-decoration: none;
+  cursor: pointer;
+  color: #fff;
+}

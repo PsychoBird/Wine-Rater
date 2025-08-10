@@ -1,3 +1,5 @@
+const header = document.getElementById("site-header");
+
 fetch("/header.html")
     .then(response => {
         if (!response.ok) throw new Error("Failed to load header");
@@ -6,9 +8,15 @@ fetch("/header.html")
     .then(htmlString => {
         let parser = new DOMParser();
         let doc = parser.parseFromString(htmlString, "text/html");
-        let header = doc.querySelector("header");
-        if (!header) throw new Error('No <header> element found in header.html');
-        document.body.insertBefore(header, document.body.firstChild);
+        let loadedHeader = doc.querySelector("header");
+        if (!loadedHeader) throw new Error('No <header> element found in header.html');
+
+        while (loadedHeader.firstChild) {
+            header.appendChild(loadedHeader.firstChild);
+        }
+
+        header.classList.remove("loading");
+        header.classList.add("loaded");
     })
     .catch(err => {
         console.error("Error loading header: ", err);
