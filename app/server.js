@@ -3,12 +3,13 @@ const pg = require("pg");
 let argon2 = require("argon2");
 let cookieParser = require("cookie-parser");
 let crypto = require("crypto");
-const app = express();
+const path = require("path");
+const env = require("../env.json");
 
+const app = express();
 const port = 3000;
 const hostname = "localhost";
 
-const env = require("../env.json");
 const Pool = pg.Pool;
 const pool = new Pool(env);
 
@@ -19,6 +20,14 @@ app.use(cookieParser());
 pool.connect().then(function () {
     console.log(`Connected to database ${env.database}`);
 });
+
+// Server pages
+
+app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "public", "login.html"))
+});
+
+// Endpoints for application logic
 
 // authentication 
 
@@ -207,5 +216,4 @@ app.post("/add-new-review", (req, res) => {
 
 app.listen(port, hostname, () => {
     console.log(`http://${hostname}:${port}`);
-  });
-  
+});
