@@ -9,14 +9,18 @@ let nameTextBox = document.getElementById("name-text");
 let emailTextBox = document.getElementById("email-text");
 let usernameTextBox = document.getElementById("username-text");
 
-// TODO: Get user info from logged in information/cookies, and use those values to load the profile page
+addEventListener("load", async () => {
+    try {
+        let res = await fetch("/profile", { credentials: "include" });
+        console.log(res)
+        if (!res.ok) throw new Error("cant fetch profile");
+        
+        let data = await res.json();
 
-addEventListener("load", () => {
-    let name = `${defaultProfileData.firstName} ${defaultProfileData.lastName}`
-    let email = defaultProfileData.email;
-    let username = defaultProfileData.username;
-
-    nameTextBox.textContent = name;
-    email.textContent = email;
-    username.textContent = username;
+        nameTextBox.textContent = `${data.first_name} ${data.last_name}`;
+        emailTextBox.textContent = data.email;
+        usernameTextBox.textContent = data.username;
+    } catch (err) {
+        console.error(err);
+    }
 });
