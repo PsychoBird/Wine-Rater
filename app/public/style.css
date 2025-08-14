@@ -1,0 +1,193 @@
+/* Was having some CSS difficulties, so found this CSS reset to browser defualts */
+/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+/* Index.html */
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #66151f;
+    color: #fff;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.login-container {
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+}
+
+.login-box {
+    background-color: rgb(41, 9, 12);
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 8px 20px rgba(41, 9, 12);
+    text-align: center;
+}
+
+.logo {
+    font-size: 2rem;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #f5d6ba;
+}
+
+.login-form input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 12px;
+    border: none;
+    border-radius: 6px;
+    background: #f4f4f4;
+    color: #333;
+    font-size: 1rem;
+}
+
+.login-form input:focus {
+    outline: none;
+    border: 2px solid #a85e5e;
+}
+
+.user-login-error  {
+    color: #f3061a;
+    font-size: 0.9rem;
+    margin-top: -6px;
+    margin-bottom: 10px;
+}
+
+/* Login Button */
+.login-form button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 8px;
+    background-color: #a85e5e;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.login-form button:hover {
+    background-color: #843b3b;
+}
+
+.signup-text {
+    margin-top: 12px;
+    font-size: 0.9rem;
+}
+
+.signup-text a {
+    color: #f5d6ba;
+    text-decoration: none;
+}
+
+.signup-text a:hover {
+    text-decoration: underline;
+}
+
+/* Reviews.html */
+
+.review-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+    margin-top: 120px;
+}
+
+.review-header-box {
+    margin-top: 15px;
+    margin-bottom: 15px;
+    background-color: rgb(41, 9, 12);
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 8px 20px rgba(41, 9, 12);
+    text-align: center;
+    top: 0;
+    position: fixed
+}
+
+.review-box {
+    background-color: rgb(31, 4, 7);
+    border-radius: 16px;
+    padding: 30px;
+    width: 100%;
+    box-shadow: 0 8px 20px rgba(41, 9, 12);
+    text-align: center;
+}
+
+.review-meta {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: #ddd;
+    display: flex;
+    justify-content: space-between;
+}
+
+.review-meta .score,
+.review-meta .user-id {
+    padding: 4px 8px;
+}
+
+.review-box b {
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+}
+
+.review-box p {
+    margin-top: 15px;
+}

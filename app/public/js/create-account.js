@@ -1,7 +1,7 @@
 let signUpButton = document.getElementById("sign-up");
 let errorSpan = document.getElementById("error");
 
-signUpButton.addEventListener("click", () => {
+signUpButton.addEventListener("click", (event) => {
     event.preventDefault();
     
     let requiredInputs = Array.from(document.querySelectorAll(".login-form input[required]"));
@@ -41,7 +41,7 @@ signUpButton.addEventListener("click", () => {
     })
     .then(response => {
         if (response.ok) {
-            return response;
+            window.location.href = "index.html"
         } else {
             throw response;
         }
