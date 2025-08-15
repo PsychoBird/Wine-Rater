@@ -41,7 +41,7 @@ function makeToken() {
 // remember that the token is essentially a password that must be kept secret
 let cookieOptions = {
   httpOnly: true, // client-side JS can't access this cookie; important to mitigate cross-site scripting attack damage
-  secure: true, // cookie will only be sent over HTTPS connections (and localhost); important so that traffic sniffers can't see it even if our user tried to use an HTTP version of our site, if we supported that
+  secure: false, //FIX THIS ONCE WE GO PUBLIC!!! // cookie will only be sent over HTTPS connections (and localhost); important so that traffic sniffers can't see it even if our user tried to use an HTTP version of our site, if we supported that
   sameSite: "strict", // browser will only include this cookie on requests to this domain, not other domains; important to prevent cross-site request forgery attacks
 };
 
@@ -144,15 +144,15 @@ app.post("/login", async (req, res) => {
   let token = makeToken();
   console.log("Generated token", token);
   tokenStorage[token] = username;
+  console.log(token, username);
   return res.cookie("token", token, cookieOptions).send("logged in, token made"); 
 });
 
 /* middleware; check if login token in token storage, if not, 403 response */
 let authorize = (req, res, next) => {
   let { token } = req.cookies;
-  console.log(token, tokenStorage);
   if (token === undefined || !tokenStorage.hasOwnProperty(token)) {
-    return res.status(403).send(error);
+    return res.status(403).send("Forbidden womp womp");
   }
   next();
 };
@@ -183,6 +183,26 @@ app.get("/private", authorize, (req, res) => {
   return res.send("A private message\n");
 });
 
+app.get("/profile", authorize, async (req, res) => {
+    let { token } = req.cookies;
+    let username = tokenStorage[token];
+    console.log("Logged username:", username);
+    try {
+        let result = await pool.query(
+            "SELECT first_name, last_name, email, username FROM users WHERE username = $1",
+            [username]  
+        );
+        console.log(result)
+        if (result.rows.length === 0) {
+            return res.status(404).send("User not found");
+        }
+
+        res.json(result.rows[0]);
+    } catch (error) {
+        console.error("SELECT FAILED", error);
+        res.status(500).send("Server error");
+    }
+});
 
 // add new review
 app.post("/add-new-review", (req, res) => {
