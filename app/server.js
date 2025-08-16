@@ -21,15 +21,42 @@ pool.connect().then(function () {
     console.log(`Connected to database ${env.database}`);
 });
 
-// Server pages
+// MIDDLEWARE; check if login token in token storage, if not, 403 response
+let authorize = (req, res, next) => {
+  let { token } = req.cookies;
+  if (token === undefined || !tokenStorage.hasOwnProperty(token)) {
+    return res.status(403).send("Not Authorized. Access Denied.");
+  }
+  next();
+};
 
+
+// PAGE ROUTING
+
+// Public Routes
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "login.html"))
 });
 
-// Endpoints for application logic
+app.get("/create-account", (req, res) => {
+    res.sendFile(path.join(__dirname, "public", "create-account.html"))
+});
 
-// authentication 
+// Protected Routes;
+app.get("/header", authorize, (req, res) => {
+    res.sendFile(path.join(__dirname, "private", "header.html"))
+});
+
+app.get("/reviews", authorize, (req, res) => {
+    res.sendFile(path.join(__dirname, "private", "reviews.html"))
+});
+
+app.get("/profile-view", authorize, (req, res) => {
+    res.sendFile(path.join(__dirname, "private", "profile.html"))
+});
+
+
+// AUTHENTICATION LOGIC
 
 let tokenStorage = {};
 
@@ -45,7 +72,8 @@ let cookieOptions = {
   sameSite: "strict", // browser will only include this cookie on requests to this domain, not other domains; important to prevent cross-site request forgery attacks
 };
 
-function validateLogin(body) {
+// Validate Credentials
+function validateCredentails(body) {
   if ((body.username.length >= 4) && (body.password.length >= 6)) {
     return true;
   } else {
@@ -53,11 +81,11 @@ function validateLogin(body) {
   }
 }
 
-// create an account 
+// Account Creation
 app.post("/create-account", async (req, res) => {
   let { body } = req;
-  if (!validateLogin(body)) {
-    return res.status(400).send("your username or password doesn't meet the requirements.."); 
+  if (!validateCredentails(body)) {
+    return res.status(400).send("your username or password doesn't meet the requirements."); 
   }
   let { firstName, lastName, email, username, password } = body;
   console.log(username, password);
@@ -103,7 +131,15 @@ app.post("/create-account", async (req, res) => {
   return res.status(200).send("congrats! ur account is made and you're logged in!"); 
 });
 
+
+// Login
 app.post("/login", async (req, res) => {
+  let testToken = makeToken();
+  console.log("Generated token", testToken);
+  tokenStorage[testToken] = "test-name";
+  console.log(testToken, "test-name");
+  return res.cookie("token", testToken, cookieOptions).send("logged in, token made"); 
+
   let { body } = req;
   // TODO validate body is correct shape and type
   if (!validateLogin(body)) {
@@ -148,15 +184,6 @@ app.post("/login", async (req, res) => {
   return res.cookie("token", token, cookieOptions).send("logged in, token made"); 
 });
 
-/* middleware; check if login token in token storage, if not, 403 response */
-let authorize = (req, res, next) => {
-  let { token } = req.cookies;
-  if (token === undefined || !tokenStorage.hasOwnProperty(token)) {
-    return res.status(403).send("Forbidden womp womp");
-  }
-  next();
-};
-
 app.post("/logout", (req, res) => {
   let { token } = req.cookies;
   if (token === undefined) {
@@ -173,15 +200,8 @@ app.post("/logout", (req, res) => {
   return res.clearCookie("token", cookieOptions).send("token has been deleted");
 });
 
-app.get("/public", (req, res) => {
-  return res.send("A public message\n");
-});
 
-// authorize middleware will be called before request handler
-// authorize will only pass control to this request handler if the user passes authorization
-app.get("/private", authorize, (req, res) => {
-  return res.send("A private message\n");
-});
+// APPLICATION LOGIC
 
 app.get("/profile", authorize, async (req, res) => {
     let { token } = req.cookies;
@@ -204,10 +224,10 @@ app.get("/profile", authorize, async (req, res) => {
     }
 });
 
-// add new review
+// Add New Review
 app.post("/add-new-review", (req, res) => {
     let body = req.body;
-    console.log("here is ur info:", body);
+    console.log("Request Body:", body);
 
     let userID = body["userID"];
     let wineID = body["wineID"]

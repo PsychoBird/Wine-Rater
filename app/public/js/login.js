@@ -30,7 +30,7 @@ login.addEventListener("click", async (event) => {
         }
 
         //good to login
-        window.location.href = "reviews.html";
+        window.location.href = "/reviews";
     } catch (err) {
         console.error("Network error:", err);
         error.textContent = "Could not reach server.";
