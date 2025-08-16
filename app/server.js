@@ -134,12 +134,6 @@ app.post("/create-account", async (req, res) => {
 
 // Login
 app.post("/login", async (req, res) => {
-  let testToken = makeToken();
-  console.log("Generated token", testToken);
-  tokenStorage[testToken] = "test-name";
-  console.log(testToken, "test-name");
-  return res.cookie("token", testToken, cookieOptions).send("logged in, token made"); 
-
   let { body } = req;
   // TODO validate body is correct shape and type
   if (!validateLogin(body)) {
@@ -231,7 +225,7 @@ app.get("/get-all-reviews", async (req, res) => {
       let result = await pool.query(
           "SELECT * FROM reviews"
       );
-      
+
       console.log(result);
       return res.json(result.rows);
     } catch (error) {
