@@ -48,7 +48,7 @@ table {
 	border-spacing: 0;
 }
 
-/* Index.html */
+/* Login.html */
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -83,6 +83,7 @@ body {
 }
 
 .login-form input {
+    width: 100%;
     padding: 12px;
     margin-bottom: 12px;
     border: none;
@@ -106,6 +107,7 @@ body {
 
 /* Login Button */
 .login-form button {
+    width: 100%;
     padding: 12px;
     margin-top: 8px;
     background-color: #a85e5e;
@@ -201,4 +203,41 @@ body {
 
 .review-box p {
     margin-top: 15px;
+}
+
+/* Header */
+
+#site-header {
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    background-color: rgb(41, 9, 12);
+    padding: 1rem;
+}
+
+#site-header.loading {
+    visibility: hidden;
+}
+
+#site-header.loaded {
+    visibility: visible;
+}
+
+#site-header nav a {
+  text-decoration: none;
+  cursor: pointer;
+  color: #fff;
+}
+
+/* General Use */
+
+.image-box {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+    display: block;
+    margin: 0 auto;
 }
