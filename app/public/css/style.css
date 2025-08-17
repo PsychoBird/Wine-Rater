@@ -48,10 +48,9 @@ table {
 	border-spacing: 0;
 }
 
-/* Login.html */
+/******************* Across all pages ********************************/
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: #66151f;
     color: #fff;
     height: 100vh;
@@ -60,6 +59,61 @@ body {
     justify-content: center;
     padding: 20px;
 }
+
+.logo {
+    font-size: 30px;
+    margin: 30px;
+    font-weight: bold;
+    color: #f5d6ba;
+    text-align: center;
+}
+
+/************************** Header *******************************/
+
+#site-header {
+    width: 100%;
+    position: fixed;
+    top: 0;
+    background-color: rgb(41, 9, 12);
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+}
+
+#site-header a {
+    float: left;
+    padding: 12px 120px;
+    font-size: 18px;
+    text-decoration: none;
+    text-align: center;
+}
+
+#site-header.loading {
+    visibility: hidden;
+}
+
+#site-header.loaded {
+    visibility: visible;
+}
+
+#site-header nav a {
+  text-decoration: none;
+  color: #fff;
+}
+
+/********************** General Use *********************/
+
+.image-box {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+    display: block;
+    margin: 0 auto;
+}
+
+/******************** Login.html ************************************/
 
 .login-container {
     width: 100%;
@@ -73,13 +127,6 @@ body {
     padding: 30px;
     box-shadow: 0 8px 20px rgba(41, 9, 12);
     text-align: center;
-}
-
-.logo {
-    font-size: 2rem;
-    margin-bottom: 8px;
-    font-weight: bold;
-    color: #f5d6ba;
 }
 
 .login-form input {
@@ -151,9 +198,9 @@ body {
     text-decoration: underline;
 }
 
-/* Reviews.html */
+/******************* Reviews.html *********************/
 
-.review-container {
+#review-container {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -162,13 +209,7 @@ body {
     margin-top: 120px;
 }
 
-.review-header-box {
-    margin-top: 15px;
-    margin-bottom: 15px;
-    background-color: rgb(41, 9, 12);
-    border-radius: 16px;
-    padding: 30px;
-    box-shadow: 0 8px 20px rgba(41, 9, 12);
+#review-header-box {
     text-align: center;
     top: 0;
     position: fixed
@@ -178,7 +219,7 @@ body {
     background-color: rgb(31, 4, 7);
     border-radius: 16px;
     padding: 30px;
-    width: 100%;
+    width: 50%;
     box-shadow: 0 8px 20px rgba(41, 9, 12);
     text-align: center;
 }
@@ -191,8 +232,7 @@ body {
     justify-content: space-between;
 }
 
-.review-meta .score,
-.review-meta .user-id {
+.review-meta .review-info {
     padding: 4px 8px;
 }
 
@@ -203,41 +243,4 @@ body {
 
 .review-box p {
     margin-top: 15px;
-}
-
-/* Header */
-
-#site-header {
-    width: 100%;
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 1000;
-    background-color: rgb(41, 9, 12);
-    padding: 1rem;
-}
-
-#site-header.loading {
-    visibility: hidden;
-}
-
-#site-header.loaded {
-    visibility: visible;
-}
-
-#site-header nav a {
-  text-decoration: none;
-  cursor: pointer;
-  color: #fff;
-}
-
-/* General Use */
-
-.image-box {
-    width: 150px;
-    height: 150px;
-    object-fit: cover;
-    border-radius: 8px;
-    display: block;
-    margin: 0 auto;
 }

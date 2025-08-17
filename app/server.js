@@ -5,13 +5,22 @@ let cookieParser = require("cookie-parser");
 let crypto = require("crypto");
 const path = require("path");
 const env = require("../env.json");
+const fs = require("fs");
 
 const app = express();
 const port = 3000;
 const hostname = "localhost";
 
 const Pool = pg.Pool;
-const pool = new Pool(env);
+const config = JSON.parse(fs.readFileSync('../env.json'));
+const pool = new Pool({
+  user: config.user,
+  host: config.host,
+  database: config.database,
+  password: config.password,
+  port: config.port,
+  ssl: { rejectUnauthorized: false }
+});
 
 app.use(express.static("public"));
 app.use(express.json());
@@ -55,6 +64,14 @@ app.get("/profile-view", authorize, (req, res) => {
     res.sendFile(path.join(__dirname, "private", "profile.html"))
 });
 
+app.get("/wine-list", authorize, (req, res) => {
+  res.sendFile(path.join(__dirname, "private", "wineList.html"))
+});
+
+app.get("/rate-a-wine", authorize, (req, res) => {
+  res.sendFile(path.join(__dirname, "private", "rateWines.html"))
+});
+
 
 // AUTHENTICATION LOGIC
 
@@ -73,7 +90,7 @@ let cookieOptions = {
 };
 
 // Validate Credentials
-function validateCredentails(body) {
+function validateCredentials(body) {
   if ((body.username.length >= 4) && (body.password.length >= 6)) {
     return true;
   } else {
@@ -84,7 +101,7 @@ function validateCredentails(body) {
 // Account Creation
 app.post("/create-account", async (req, res) => {
   let { body } = req;
-  if (!validateCredentails(body)) {
+  if (!validateCredentials(body)) {
     return res.status(400).send("your username or password doesn't meet the requirements."); 
   }
   let { firstName, lastName, email, username, password } = body;
@@ -136,7 +153,7 @@ app.post("/create-account", async (req, res) => {
 app.post("/login", async (req, res) => {
   let { body } = req;
   // TODO validate body is correct shape and type
-  if (!validateLogin(body)) {
+  if (!validateCredentials(body)) {
     return res.status(400).send("your username or password doesn't meet the requirements..");
   }
   let { username, password } = body;
