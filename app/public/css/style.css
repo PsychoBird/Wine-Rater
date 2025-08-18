@@ -202,24 +202,13 @@ body {
 
 #review-container {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-    padding: 20px;
-    margin-top: 120px;
-}
-
-#review-header-box {
-    text-align: center;
-    top: 0;
-    position: fixed
 }
 
 .review-box {
     background-color: rgb(31, 4, 7);
     border-radius: 16px;
     padding: 30px;
-    width: 50%;
+    width: 100%;
     box-shadow: 0 8px 20px rgba(41, 9, 12);
     text-align: center;
 }
