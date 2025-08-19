@@ -240,7 +240,10 @@ app.get("/profile", authorize, async (req, res) => {
 app.get("/get-all-reviews", async (req, res) => {
     try {
       let result = await pool.query(
-          "SELECT * FROM reviews"
+          `SELECT reviews.id, reviews.wine_name, reviews.description, reviews.score, users.username
+          FROM reviews
+          JOIN users ON reviews.user_id = users.id
+          ORDER BY reviews.id DESC`
       );
 
       console.log(result);
@@ -253,15 +256,29 @@ app.get("/get-all-reviews", async (req, res) => {
 
 // Post a New Review
 app.post("/add-new-review", async (req, res) => {
+    let { token } = req.cookies;
+    let username = tokenStorage[token];
+    console.log("Logged username:", username);
+
+    let result = await pool.query(
+      "SELECT id, username FROM users WHERE username = $1",
+      [username]  
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).send("user not found");
+    }
+
+    let userID = result.rows[0].id;
+
     let body = req.body;
     console.log("Request Body:", body);
 
-    let userID = body["userID"];
-    let wineID = body["wineID"]
+    let wineName = body["wineName"]
     let postDescription = body["postDescription"];
     let score = body["score"];
 
-    let arr = [userID, wineID, postDescription, score];
+    let arr = [userID, wineName, postDescription, score];
 
     if (!postDescription || !score) {
         console.log("u didnt fill soemthing out properly try agn")
@@ -269,7 +286,7 @@ app.post("/add-new-review", async (req, res) => {
     } else {
         try {
             await pool
-            .query(`INSERT INTO reviews(user_id, wine_id, post_description, score)
+            .query(`INSERT INTO reviews(user_id, wine_name, description, score)
                 VALUES($1, $2, $3, $4)
                 RETURNING *`, arr)
             .then(() => {

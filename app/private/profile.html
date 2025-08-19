@@ -2,22 +2,31 @@
 <html>
 <head>
     <meta charset="UTF-8" />
+    <title>Corked | My Profile</title>
     <link rel="stylesheet" href="/css/style.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Sail&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 </head>
 <body>
-    <header id="site-header" class="loading"></header>
-    <div class="login-container">
-        <h1 class="logo">My Profile</h1>
-        <div class="login-box">
+    <div class="header-nav">
+        <h1 class="logo">Corked</h1>
+        <header id="site-header" class="loading"></header>
+    </div>
+
+    <div id="profileContainer">
+        <div id="profileInfo">
             <img class="image-box" src="/assets/default_profile.png"/>
-            <h2 class="logo" id="name-text"></h2>
+            <h2 id="name-text"></h2>
             <h3 id="email-text"></h3>
             <hr>
             <h3>Username: <p id="username-text"></p></h3>
         </div>
+        <button id="logout">Logout</button>
     </div>
 
 <script src="/js/header.js"></script>
 <script src="/js/profile-view.js"></script>
+<script src="/js/logout.js"></script>
 </body>
 </html>

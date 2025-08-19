@@ -11,7 +11,7 @@ async function loadReviews() {
             box.className = "review-box";
 
             let user = document.createElement("span");
-            user.className = "review-info";
+            user.id = "review-username";
             user.textContent = `@${review.username}`;
 
             let reviewInfo = document.createElement("div");
@@ -23,12 +23,13 @@ async function loadReviews() {
 
             let score = document.createElement("span");
             score.className = "review-info";
-            score.textContent = `Score ${review.score}/10`;
+            score.textContent = `Score: ${review.score}/10`;
 
             reviewInfo.appendChild(wineName);
             reviewInfo.appendChild(score);
 
             let description = document.createElement("p");
+            description.id = "review-description";
             description.textContent = `${review.description}`;
 
             box.appendChild(user);

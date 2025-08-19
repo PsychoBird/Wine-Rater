@@ -53,32 +53,30 @@ table {
 body {
     background: #66151f;
     color: #fff;
-    height: 100vh;
+    padding: 20px;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 20px;
+    font-family: "Raleway";
 }
 
 .logo {
-    font-size: 30px;
+    font-size: 70px;
     margin: 30px;
-    font-weight: bold;
+    font-weight: 400;
     color: #f5d6ba;
     text-align: center;
+    font-family: "Sail", system-ui;
 }
 
 /************************** Header *******************************/
 
 #site-header {
     width: 100%;
-    position: fixed;
-    top: 0;
-    background-color: rgb(41, 9, 12);
-    gap: 20px;
     justify-content: center;
     align-items: center;
-    display: flex;
+    font-family: "Raleway";
 }
 
 #site-header a {
@@ -202,6 +200,7 @@ body {
 
 #review-container {
     display: flex;
+    margin-top: 50px;
 }
 
 .review-box {
@@ -210,26 +209,70 @@ body {
     padding: 30px;
     width: 100%;
     box-shadow: 0 8px 20px rgba(41, 9, 12);
-    text-align: center;
+    margin-bottom: 50px;
 }
 
 .review-meta {
     margin-top: 10px;
-    font-size: 0.9rem;
-    color: #ddd;
     display: flex;
     justify-content: space-between;
 }
 
-.review-meta .review-info {
-    padding: 4px 8px;
+.review-info {
+    font-size: 16px;
 }
 
-.review-box b {
-    font-size: 1.8rem;
-    margin-bottom: 10px;
+#review-username {
+    font-weight: 600;
+    font-size: 16px;
+    padding-bottom: 15px;
+    color: #f5d6ba;
 }
 
-.review-box p {
-    margin-top: 15px;
+#review-description {
+    padding-top: 20px;
+    font-size: 16px;
+}
+
+/******************* rate a wine *********************/
+#submission {
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.input-group {
+    padding: 20px;
+}
+
+.form-guide-text {
+    padding-bottom: 10px;
+}
+
+/*************** profile *******************/
+#profileContainer {
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+}
+
+#profileInfo {
+    background-color: rgb(41, 9, 12);
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 8px 20px rgba(41, 9, 12);
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+#logout {
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    background-color: #a85e5e;
+    border-radius: 6px;
+    color: white;
+    width: 100%;
+    font-family: "Playfair Display";
 }

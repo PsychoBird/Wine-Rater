@@ -2,14 +2,45 @@
 <html>
     
     <head>
-        <title>My Wines</title>
+        <title>Corked | Wine Rating</title>
         <link rel="stylesheet" href="/css/style.css" />
+        <link href="https://fonts.googleapis.com/css2?family=Sail&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     </head>
 
     <body>
-        <header id="site-header" class="loading"></header>
-        <p>nothing here yet!! under construction</p>
+        <div class="header-nav">
+            <h1 class="logo">Corked</h1>
+            <header id="site-header" class="loading"></header>
+        </div>
+
+        <div id="submission">
+
+            <div class="input-group">
+                <h4 class="form-guide-text">Wine Name</h4>
+                <input type="text" id="wineName" placeholder="Wine Name" />
+            </div>
+              
+            <div class="input-group">
+                <h4 class="form-guide-text">Given Score</h4>
+                <input type="number" id="score" placeholder="Score (0-10)" min="0" max="10" />
+            </div>
+              
+            <div class="input-group">
+                <h4 class="form-guide-text">What did you think about this wine?</h4>
+                <textarea id="description" placeholder="Write your review..."></textarea>
+            </div>
+              
+            <button id="submitReview">Submit</button>
+
+            <div id="message">
+                <p id="reviewMsg"></p>
+            </div>
+        </div>
+
         <script src="/js/header.js"></script>
+        <script src="/js/post-review.js"></script>
     </body>
 
 </html>
