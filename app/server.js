@@ -136,7 +136,7 @@ app.post("/create-account", async (req, res) => {
 app.post("/login", async (req, res) => {
   let { body } = req;
   // TODO validate body is correct shape and type
-  if (!validateLogin(body)) {
+  if (!validateCredentails(body)) {
     return res.status(400).send("your username or password doesn't meet the requirements..");
   }
   let { username, password } = body;
