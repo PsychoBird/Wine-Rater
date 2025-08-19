@@ -12,10 +12,11 @@ CREATE TABLE IF NOT EXISTS users (
 
 CREATE TABLE IF NOT EXISTS saved_wines (
     id SERIAL PRIMARY KEY,
-    name TEXT NOT NULL,
+    username TEXT NOT NULL,
+    wine_name TEXT NOT NULL,
     country_origin TEXT NOT NULL,
     year INT NOT NULL,
-    description TEXT
+    description TEXT,
 );
 
 CREATE TABLE IF NOT EXISTS reviews (

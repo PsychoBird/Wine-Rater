@@ -264,6 +264,76 @@ app.post("/add-new-review", async (req, res) => {
     } 
 });
 
+// Get all Wines in Personal List
+app.get("/get-wine-list", async (req, res) => {
+    let { token } = req.cookies;
+    let username = tokenStorage[token];
+
+    if (!username) {
+      return res.status(401).send("Unauthorized: Invalid or missing token");
+    }
+
+    try {
+      let result = await pool.query(
+        `SELECT wine_name, country_origin, year, description FROM saved_wines 
+         WHERE username = $1 ORDER BY year DESC`,
+        [username]
+      );
+
+      return res.json({
+        count: result.rows.length,
+        wines: result.rows
+      });
+    } catch (error) {
+      console.error("SELECT Failed: ", error);
+      res.status(500).send(error);
+    }
+});
+
+// Post a New Wine to User's Personal List
+app.post("/add-to-wine-list", async (req, res) => {
+    let { token } = req.cookies;
+    let username = tokenStorage[token];
+
+    let body = req.body;
+    console.log("Request sent to Get Wine List with body: ", body);
+    let country = body["country_origin"];
+    let year = body["year"];
+    let wine = body["wine_name"];
+    let description = body["description"] ?? null;
+
+    if (!country || year === undefined || year === null || !wine) {
+      res.status(400).send("Request body missing required information. Needs wine_name, country_origin, and year.");
+    }
+
+    try {
+      let queryText = "INSERT INTO saved_wines(username, wine_name, country_origin, year";
+      let valuesText = "VALUES($1, $2, $3, $4"
+      let arr = [username, wine, country, year];
+      if (description) {
+        queryText += ", description) ";
+        valuesText += ", $5)";
+        arr.push(description);
+      } else {
+        queryText += ") ";
+        valuesText += ") "
+      }
+      let finalQuery = queryText + valuesText + "RETURNING *";
+
+      let result = await pool.query(`${finalQuery}`, arr);
+      res.status(200).json({
+        message: "Successfully added new wine.",
+        wine: result.rows[0]
+      });
+    } catch (error) {
+      if (error.code === "1062") { // Duplicate entry error code for MariaDB
+        return res.status(409).send("This wine is already in your list.");
+      }
+      console.error("INSERT Failed: ", error);
+      res.status(500).send(error);
+    }
+});
+
 app.listen(port, hostname, () => {
     console.log(`http://${hostname}:${port}`);
 });
