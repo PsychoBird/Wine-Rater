@@ -19,6 +19,14 @@ CREATE TABLE IF NOT EXISTS saved_wines (
     description TEXT,
 );
 
+CREATE TABLE IF NOT EXISTS global_wine_db (
+    wine_name TEXT NOT NULL,
+    country_origin TEXT NOT NULL,
+    year INT NOT NULL,
+    average_score INT,
+    PRIMARY KEY (wine_name, country_origin, year)
+);
+
 CREATE TABLE IF NOT EXISTS reviews (
     id SERIAL PRIMARY KEY,
     user_id INT NOT NULL,

@@ -6,6 +6,7 @@ let crypto = require("crypto");
 const path = require("path");
 const env = require("../env.json");
 const fs = require("fs");
+const { count } = require("console");
 
 const app = express();
 const port = 3000;
@@ -220,24 +221,24 @@ app.post("/logout", (req, res) => {
 
 // Get user profile information
 app.get("/profile", authorize, async (req, res) => {
-    let { token } = req.cookies;
-    let username = tokenStorage[token];
-    console.log("Logged username:", username);
-    try {
-        let result = await pool.query(
-            "SELECT first_name, last_name, email, username FROM users WHERE username = $1",
-            [username]  
-        );
-        console.log(result);
-        if (result.rows.length === 0) {
-            return res.status(404).send("User not found");
-        }
+  let { token } = req.cookies;
+  let username = tokenStorage[token];
+  console.log("Logged username:", username);
+  try {
+      let result = await pool.query(
+          "SELECT first_name, last_name, email, username FROM users WHERE username = $1",
+          [username]  
+      );
+      console.log(result);
+      if (result.rows.length === 0) {
+          return res.status(404).send("User not found");
+      }
 
-        res.json(result.rows[0]);
-    } catch (error) {
-        console.error("SELECT FAILED", error);
-        res.status(500).send("Server error: ", error);
-    }
+      res.json(result.rows[0]);
+  } catch (error) {
+      console.error("SELECT FAILED", error);
+      res.status(500).send("Server error: ", error);
+  }
 });
 
 // Get all reviews from the database
@@ -261,118 +262,135 @@ app.get("/get-all-reviews", async (req, res) => {
 
 // Post a New Review
 app.post("/add-new-review", async (req, res) => {
-    let { token } = req.cookies;
-    let username = tokenStorage[token];
-    console.log("Logged username:", username);
+  let { token } = req.cookies;
+  let username = tokenStorage[token];
+  console.log("Logged username:", username);
 
-    let result = await pool.query(
-      "SELECT id, username FROM users WHERE username = $1",
-      [username]  
-    );
+  let result = await pool.query(
+    "SELECT id, username FROM users WHERE username = $1",
+    [username]  
+  );
 
-    if (result.rows.length === 0) {
-      return res.status(404).send("user not found");
-    }
+  if (result.rows.length === 0) {
+    return res.status(404).send("user not found");
+  }
 
-    let userID = result.rows[0].id;
+  let userID = result.rows[0].id;
 
-    let body = req.body;
-    console.log("Request Body:", body);
+  let body = req.body;
+  console.log("Request Body:", body);
 
-    let wineName = body["wineName"]
-    let postDescription = body["postDescription"];
-    let score = body["score"];
+  let wineName = body["wineName"]
+  let postDescription = body["postDescription"];
+  let score = body["score"];
 
-    let arr = [userID, wineName, postDescription, score];
+  let arr = [userID, wineName, postDescription, score];
 
-    if (!postDescription || !score) {
-        console.log("u didnt fill soemthing out properly try agn")
-        return res.status(400).send('some info was not completed... try again');
-    } else {
-        try {
-            await pool
-            .query(`INSERT INTO reviews(user_id, wine_name, description, score)
-                VALUES($1, $2, $3, $4)
-                RETURNING *`, arr)
-            .then(() => {
-                return res.status(200).send('ok u got it');
-            })
-        } catch (error) {
-            return res.status(500).send('something else went wrong');
-        }
-    } 
+  if (!postDescription || !score) {
+      console.log("u didnt fill soemthing out properly try agn")
+      return res.status(400).send('some info was not completed... try again');
+  } else {
+      try {
+          await pool
+          .query(`INSERT INTO reviews(user_id, wine_name, description, score)
+              VALUES($1, $2, $3, $4)
+              RETURNING *`, arr)
+          .then(() => {
+              return res.status(200).send('ok u got it');
+          })
+      } catch (error) {
+          return res.status(500).send('something else went wrong');
+      }
+  }
 });
 
 // Get all Wines in Personal List
-app.get("/get-wine-list", async (req, res) => {
-    let { token } = req.cookies;
-    let username = tokenStorage[token];
+app.get("/get-personal-list", async (req, res) => {
+  let { token } = req.cookies;
+  let username = tokenStorage[token];
 
-    if (!username) {
-      return res.status(401).send("Unauthorized: Invalid or missing token");
-    }
+  if (!username) {
+    return res.status(401).send("Unauthorized: Invalid or missing token");
+  }
 
-    try {
-      let result = await pool.query(
-        `SELECT wine_name, country_origin, year, description FROM saved_wines 
-         WHERE username = $1 ORDER BY year DESC`,
-        [username]
-      );
+  try {
+    let result = await pool.query(
+      `SELECT wine_name, country_origin, year, description FROM saved_wines 
+        WHERE username = $1 ORDER BY year DESC`,
+      [username]
+    );
 
-      return res.json({
-        count: result.rows.length,
-        wines: result.rows
-      });
-    } catch (error) {
-      console.error("SELECT Failed: ", error);
-      res.status(500).send(error);
-    }
+    return res.json({
+      count: result.rows.length,
+      wines: result.rows
+    });
+  } catch (error) {
+    console.error("SELECT Failed: ", error);
+    res.status(500).send(error);
+  }
 });
 
 // Post a New Wine to User's Personal List
-app.post("/add-to-wine-list", async (req, res) => {
-    let { token } = req.cookies;
-    let username = tokenStorage[token];
+app.post("/add-to-personal-list", async (req, res) => {
+  let { token } = req.cookies;
+  let username = tokenStorage[token];
 
-    let body = req.body;
-    console.log("Request sent to Get Wine List with body: ", body);
-    let country = body["country_origin"];
-    let year = body["year"];
-    let wine = body["wine_name"];
-    let description = body["description"] ?? null;
+  let body = req.body;
+  console.log("Request sent to Get Wine List with body: ", body);
+  let country = body["country_origin"];
+  let year = body["year"];
+  let wine = body["wine_name"];
+  let description = body["description"] ?? null;
 
-    if (!country || year === undefined || year === null || !wine) {
-      res.status(400).send("Request body missing required information. Needs wine_name, country_origin, and year.");
+  if (!country || year === undefined || year === null || !wine) {
+    res.status(400).send("Request body missing required information. Needs wine_name, country_origin, and year.");
+  }
+
+  try {
+    let queryText = "INSERT INTO saved_wines(username, wine_name, country_origin, year";
+    let valuesText = "VALUES($1, $2, $3, $4"
+    let arr = [username, wine, country, year];
+    if (description) {
+      queryText += ", description) ";
+      valuesText += ", $5)";
+      arr.push(description);
+    } else {
+      queryText += ") ";
+      valuesText += ") "
     }
+    let finalQuery = queryText + valuesText + "RETURNING *";
 
-    try {
-      let queryText = "INSERT INTO saved_wines(username, wine_name, country_origin, year";
-      let valuesText = "VALUES($1, $2, $3, $4"
-      let arr = [username, wine, country, year];
-      if (description) {
-        queryText += ", description) ";
-        valuesText += ", $5)";
-        arr.push(description);
-      } else {
-        queryText += ") ";
-        valuesText += ") "
-      }
-      let finalQuery = queryText + valuesText + "RETURNING *";
-
-      let result = await pool.query(`${finalQuery}`, arr);
-      res.status(200).json({
-        message: "Successfully added new wine.",
-        wine: result.rows[0]
-      });
-    } catch (error) {
-      if (error.code === "1062") { // Duplicate entry error code for MariaDB
-        return res.status(409).send("This wine is already in your list.");
-      }
-      console.error("INSERT Failed: ", error);
-      res.status(500).send(error);
+    let result = await pool.query(`${finalQuery}`, arr);
+    res.status(200).json({
+      message: "Successfully added new wine.",
+      wine: result.rows[0]
+    });
+  } catch (error) {
+    if (error.code === "1062") { // Duplicate entry error code for MariaDB
+      return res.status(409).send("This wine is already in your list.");
     }
+    console.error("INSERT Failed: ", error);
+    res.status(500).send(error);
+  }
 });
 
 app.listen(port, hostname, () => {
     console.log(`http://${hostname}:${port}`);
 });
+
+
+// Utility Functions
+
+async function checkForDupWineInGlobalList(wine_name, country, year) {
+  try {
+    let result = await pool.query(
+      `SELECT average_score FROM global_wine_db WHERE wine_name = $1
+      country_origin = $2 year = $3`,
+      [wine_name, country, year]
+    );
+
+    return !(result.rows.length === 0)
+  } catch (error) {
+    throw error;
+  }
+}
