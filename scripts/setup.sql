@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS saved_wines (
 CREATE TABLE IF NOT EXISTS reviews (
     id SERIAL PRIMARY KEY,
     user_id INT NOT NULL,
-    wine_id INT NOT NULL,
+    wine_name VARCHAR(255) NOT NULL,
     post_description TEXT,
     score INT NOT NULL CHECK (score >= 0 AND score <= 10)
 );

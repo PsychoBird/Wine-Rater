@@ -2,61 +2,24 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
+    <title>Corked | Wine Reviews</title>
     <link rel="stylesheet" href="/css/style.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Sail&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 </head>
 <body>
-    <header id="site-header" class="loading"></header>
-    <div class="review-container">
-        <div class="review-header-box">
-            <h1 class="logo">Corked Reviews</h1>
-        </div>
-
-        <div class="review-box">
-            <b>Review of Pinot Noir</b>
-            <div class="review-meta">
-                <span class="score">Score: 8.5/10</span>
-                <span class="user-id">User: @vinoLover21</span>
-            </div>
-            <p>Earthy and rich with a silky texture. Great with duck.</p>
-        </div>
-
-        <div class="review-box">
-            <b>Review of Merlot</b>
-            <div class="review-meta">
-                <span class="score">Score: 7.8/10</span>
-                <span class="user-id">User: @redblend88</span>
-            </div>
-            <p>Soft and fruity, notes of plum and chocolate. Easy to drink.</p>
-        </div>
-
-        <div class="review-box">
-            <b>Review of Chardonnay</b>
-            <div class="review-meta">
-                <span class="score">Score: 8.2/10</span>
-                <span class="user-id">User: @grapegoddess</span>
-            </div>
-            <p>Oaky and buttery, with a creamy finish. Excellent for fish.</p>
-        </div>
-
-        <div class="review-box">
-            <b>Review of Cabernet Sauvignon</b>
-            <div class="review-meta">
-                <span class="score">Score: 9.0/10</span>
-                <span class="user-id">User: @boldreds</span>
-            </div>
-            <p>Bold and tannic with blackcurrant notes. Great aging potential.</p>
-        </div>
-
-
-        <div class="review-box">
-            <b>Review of Cabernet Sauvignon</b>
-            <div class="review-meta">
-                <span class="score">Score: 9.0/10</span>
-                <span class="user-id">User: @boldreds</span>
-            </div>
-            <p>Bold and tannic with blackcurrant notes. Great aging potential.</p>
-        </div>
+    <div class="header-nav">
+        <h1 class="logo">Corked</h1>
+        <header id="site-header" class="loading"></header>
     </div>
+
+    <div id="review-container">
+        <div id="userfeed"></div>
+    </div>
+
 <script src="/js/header.js"></script>
+<script src="/js/get-wines.js"></script>
+
 </body>
 </html>

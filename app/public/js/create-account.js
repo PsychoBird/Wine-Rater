@@ -41,7 +41,7 @@ signUpButton.addEventListener("click", (event) => {
     })
     .then(response => {
         if (response.ok) {
-            window.location.href = "index.html"
+            window.location.href = "/reviews";
         } else {
             throw response;
         }
