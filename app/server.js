@@ -44,24 +44,24 @@ let authorize = (req, res, next) => {
 
 // Public Routes
 app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "public", "login.html"))
+  res.sendFile(path.join(__dirname, "public", "login.html"))
 });
 
 app.get("/create-account", (req, res) => {
-    res.sendFile(path.join(__dirname, "public", "create-account.html"))
+  res.sendFile(path.join(__dirname, "public", "create-account.html"))
 });
 
 // Protected Routes;
 app.get("/header", authorize, (req, res) => {
-    res.sendFile(path.join(__dirname, "private", "header.html"))
+  res.sendFile(path.join(__dirname, "private", "header.html"))
 });
 
 app.get("/reviews", authorize, (req, res) => {
-    res.sendFile(path.join(__dirname, "private", "reviews.html"))
+  res.sendFile(path.join(__dirname, "private", "reviews.html"))
 });
 
 app.get("/profile-view", authorize, (req, res) => {
-    res.sendFile(path.join(__dirname, "private", "profile.html"))
+  res.sendFile(path.join(__dirname, "private", "profile.html"))
 });
 
 app.get("/wine-list", authorize, (req, res) => {
@@ -105,7 +105,7 @@ app.post("/create-account", async (req, res) => {
     return res.status(400).send("your username or password doesn't meet the requirements."); 
   }
   let { firstName, lastName, email, username, password } = body;
-  console.log(username, password);
+  console.log(`Username: ${username}, Password: ${password}`);
 
   // checking if username exists in database
   try {
@@ -117,21 +117,18 @@ app.post("/create-account", async (req, res) => {
     console.log("SELECT FAILED", error);
     return res.status(500).send(error); 
   }
-  // username exists in database 
-  if (result.rows.length !== 0) {
-    console.log("username already exists in the database");
-    return res.status(400).send("username already exists in the database, pick a different one"); 
-  }
 
-  // TODO validate username/password meet requirements
   let hash;
   try {
     hash = await argon2.hash(password);
   } catch (error) {
     console.log("HASH FAILED", error);
-    return res.status(500).send(error);
+    return res.status(500).send("Internal server error");
   }
-  console.log(hash); // TODO just for debugging
+
+  // TODO just for debugging
+  console.log("Hash: ", hash);
+
   try {
     await pool.query("INSERT INTO users (first_name, last_name, email, username, password) VALUES ($1, $2, $3, $4, $5)", [
       firstName,
@@ -142,10 +139,18 @@ app.post("/create-account", async (req, res) => {
     ]);
   } catch (error) {
     console.log("INSERT FAILED", error);
-    return res.status(500).send(error);
+    if (error.code === "23505" || error.code === "1062") {
+      return res.status(400).send("Username or email already exists. Pick a different one.");
+    }
+    return res.status(500).send("internval server error");
   }
-  // TODO automatically log people in when they create account, because why not?
-  return res.status(200).send("congrats! ur account is made and you're logged in!"); 
+
+  // Auto Login
+  let token = makeToken();
+  console.log(`Generated Token: ${token}\nFor User: ${username}`);
+  tokenStorage[token] = username;
+
+  return res.cookie("token", token, cookieOptions).status(201).send("Account created and user logged in successfully")
 });
 
 
@@ -182,17 +187,16 @@ app.post("/login", async (req, res) => {
     return res.status(500).send(error); 
   }
   // password didn't match
-  console.log(verifyResult);
   if (!verifyResult) {
     console.log("seems like you have the wrong password.. try again");
     return res.status(400).send("seems like you have the wrong password.. "); 
   }
   // generate login token, save in cookie
   let token = makeToken();
-  console.log("Generated token", token);
+  console.log(`Generated Token: ${token}\nFor User: ${username}\n`);
   tokenStorage[token] = username;
-  console.log(token, username);
-  return res.cookie("token", token, cookieOptions).send("logged in, token made"); 
+
+  return res.cookie("token", token, cookieOptions).status(201).send("User logged in successfully"); 
 });
 
 app.post("/logout", (req, res) => {
@@ -238,20 +242,21 @@ app.get("/profile", authorize, async (req, res) => {
 
 // Get all reviews from the database
 app.get("/get-all-reviews", async (req, res) => {
-    try {
-      let result = await pool.query(
-          `SELECT reviews.id, reviews.wine_name, reviews.description, reviews.score, users.username
-          FROM reviews
-          JOIN users ON reviews.user_id = users.id
-          ORDER BY reviews.id DESC`
-      );
+  console.log("Received request to get all reviews");
+  try {
+    let result = await pool.query(
+        `SELECT reviews.id, reviews.wine_name, reviews.description, reviews.score, users.username
+        FROM reviews
+        JOIN users ON reviews.user_id = users.id
+        ORDER BY reviews.id DESC`
+    );
 
-      console.log(result);
-      return res.json(result.rows);
-    } catch (error) {
-        console.error("SELECT Failed: ", error);
-        return res.status(500).send("Server error: ", error);
-    }
+    console.log("Result: ", result.rows);
+    return res.json(result.rows);
+  } catch (error) {
+      console.error("SELECT Failed: ", error);
+      return res.status(500).send("Server error: ", error);
+  }
 });
 
 // Post a New Review
