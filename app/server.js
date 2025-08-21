@@ -6,6 +6,7 @@ let crypto = require("crypto");
 const path = require("path");
 const env = require("../env.json");
 const fs = require("fs");
+const { count } = require("console");
 
 const app = express();
 const port = 3000;
@@ -44,24 +45,24 @@ let authorize = (req, res, next) => {
 
 // Public Routes
 app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "public", "login.html"))
+  res.sendFile(path.join(__dirname, "public", "login.html"))
 });
 
 app.get("/create-account", (req, res) => {
-    res.sendFile(path.join(__dirname, "public", "create-account.html"))
+  res.sendFile(path.join(__dirname, "public", "create-account.html"))
 });
 
 // Protected Routes;
 app.get("/header", authorize, (req, res) => {
-    res.sendFile(path.join(__dirname, "private", "header.html"))
+  res.sendFile(path.join(__dirname, "private", "header.html"))
 });
 
 app.get("/reviews", authorize, (req, res) => {
-    res.sendFile(path.join(__dirname, "private", "reviews.html"))
+  res.sendFile(path.join(__dirname, "private", "reviews.html"))
 });
 
 app.get("/profile-view", authorize, (req, res) => {
-    res.sendFile(path.join(__dirname, "private", "profile.html"))
+  res.sendFile(path.join(__dirname, "private", "profile.html"))
 });
 
 app.get("/wine-list", authorize, (req, res) => {
@@ -105,7 +106,7 @@ app.post("/create-account", async (req, res) => {
     return res.status(400).send("your username or password doesn't meet the requirements."); 
   }
   let { firstName, lastName, email, username, password } = body;
-  console.log(username, password);
+  console.log(`Username: ${username}, Password: ${password}`);
 
   // checking if username exists in database
   try {
@@ -117,21 +118,18 @@ app.post("/create-account", async (req, res) => {
     console.log("SELECT FAILED", error);
     return res.status(500).send(error); 
   }
-  // username exists in database 
-  if (result.rows.length !== 0) {
-    console.log("username already exists in the database");
-    return res.status(400).send("username already exists in the database, pick a different one"); 
-  }
 
-  // TODO validate username/password meet requirements
   let hash;
   try {
     hash = await argon2.hash(password);
   } catch (error) {
     console.log("HASH FAILED", error);
-    return res.status(500).send(error);
+    return res.status(500).send("Internal server error");
   }
-  console.log(hash); // TODO just for debugging
+
+  // TODO just for debugging
+  console.log("Hash: ", hash);
+
   try {
     await pool.query("INSERT INTO users (first_name, last_name, email, username, password) VALUES ($1, $2, $3, $4, $5)", [
       firstName,
@@ -142,10 +140,18 @@ app.post("/create-account", async (req, res) => {
     ]);
   } catch (error) {
     console.log("INSERT FAILED", error);
-    return res.status(500).send(error);
+    if (error.code === "23505" || error.code === "1062") {
+      return res.status(400).send("Username or email already exists. Pick a different one.");
+    }
+    return res.status(500).send("internval server error");
   }
-  // TODO automatically log people in when they create account, because why not?
-  return res.status(200).send("congrats! ur account is made and you're logged in!"); 
+
+  // Auto Login
+  let token = makeToken();
+  console.log(`Generated Token: ${token}\nFor User: ${username}`);
+  tokenStorage[token] = username;
+
+  return res.cookie("token", token, cookieOptions).status(201).send("Account created and user logged in successfully")
 });
 
 
@@ -182,17 +188,16 @@ app.post("/login", async (req, res) => {
     return res.status(500).send(error); 
   }
   // password didn't match
-  console.log(verifyResult);
   if (!verifyResult) {
     console.log("seems like you have the wrong password.. try again");
     return res.status(400).send("seems like you have the wrong password.. "); 
   }
   // generate login token, save in cookie
   let token = makeToken();
-  console.log("Generated token", token);
+  console.log(`Generated Token: ${token}\nFor User: ${username}\n`);
   tokenStorage[token] = username;
-  console.log(token, username);
-  return res.cookie("token", token, cookieOptions).send("logged in, token made"); 
+
+  return res.cookie("token", token, cookieOptions).status(201).send("User logged in successfully"); 
 });
 
 app.post("/logout", (req, res) => {
@@ -216,88 +221,176 @@ app.post("/logout", (req, res) => {
 
 // Get user profile information
 app.get("/profile", authorize, async (req, res) => {
-    let { token } = req.cookies;
-    let username = tokenStorage[token];
-    console.log("Logged username:", username);
-    try {
-        let result = await pool.query(
-            "SELECT first_name, last_name, email, username FROM users WHERE username = $1",
-            [username]  
-        );
-        console.log(result);
-        if (result.rows.length === 0) {
-            return res.status(404).send("User not found");
-        }
+  let { token } = req.cookies;
+  let username = tokenStorage[token];
+  console.log("Logged username:", username);
+  try {
+      let result = await pool.query(
+          "SELECT first_name, last_name, email, username FROM users WHERE username = $1",
+          [username]  
+      );
+      console.log(result);
+      if (result.rows.length === 0) {
+          return res.status(404).send("User not found");
+      }
 
-        res.json(result.rows[0]);
-    } catch (error) {
-        console.error("SELECT FAILED", error);
-        res.status(500).send("Server error: ", error);
-    }
+      res.json(result.rows[0]);
+  } catch (error) {
+      console.error("SELECT FAILED", error);
+      res.status(500).send("Server error: ", error);
+  }
 });
 
 // Get all reviews from the database
 app.get("/get-all-reviews", async (req, res) => {
-    try {
-      let result = await pool.query(
-          `SELECT reviews.id, reviews.wine_name, reviews.description, reviews.score, users.username
-          FROM reviews
-          JOIN users ON reviews.user_id = users.id
-          ORDER BY reviews.id DESC`
-      );
+  console.log("Received request to get all reviews");
+  try {
+    let result = await pool.query(
+        `SELECT reviews.id, reviews.wine_name, reviews.description, reviews.score, users.username
+        FROM reviews
+        JOIN users ON reviews.user_id = users.id
+        ORDER BY reviews.id DESC`
+    );
 
-      console.log(result);
-      return res.json(result.rows);
-    } catch (error) {
-        console.error("SELECT Failed: ", error);
-        return res.status(500).send("Server error: ", error);
-    }
+    console.log("Result: ", result.rows);
+    return res.json(result.rows);
+  } catch (error) {
+      console.error("SELECT Failed: ", error);
+      return res.status(500).send("Server error: ", error);
+  }
 });
 
 // Post a New Review
 app.post("/add-new-review", async (req, res) => {
-    let { token } = req.cookies;
-    let username = tokenStorage[token];
-    console.log("Logged username:", username);
+  let { token } = req.cookies;
+  let username = tokenStorage[token];
+  console.log("Logged username:", username);
 
+  let result = await pool.query(
+    "SELECT id, username FROM users WHERE username = $1",
+    [username]  
+  );
+
+  if (result.rows.length === 0) {
+    return res.status(404).send("user not found");
+  }
+
+  let userID = result.rows[0].id;
+
+  let body = req.body;
+  console.log("Request Body:", body);
+
+  let wineName = body["wineName"]
+  let postDescription = body["postDescription"];
+  let score = body["score"];
+
+  let arr = [userID, wineName, postDescription, score];
+
+  if (!postDescription || !score) {
+      console.log("u didnt fill soemthing out properly try agn")
+      return res.status(400).send('some info was not completed... try again');
+  } else {
+      try {
+          await pool
+          .query(`INSERT INTO reviews(user_id, wine_name, description, score)
+              VALUES($1, $2, $3, $4)
+              RETURNING *`, arr)
+          .then(() => {
+              return res.status(200).send('ok u got it');
+          })
+      } catch (error) {
+          return res.status(500).send('something else went wrong');
+      }
+  }
+});
+
+// Get all Wines in Personal List
+app.get("/get-personal-list", async (req, res) => {
+  let { token } = req.cookies;
+  let username = tokenStorage[token];
+
+  if (!username) {
+    return res.status(401).send("Unauthorized: Invalid or missing token");
+  }
+
+  try {
     let result = await pool.query(
-      "SELECT id, username FROM users WHERE username = $1",
-      [username]  
+      `SELECT wine_name, country_origin, year, description FROM saved_wines 
+        WHERE username = $1 ORDER BY year DESC`,
+      [username]
     );
 
-    if (result.rows.length === 0) {
-      return res.status(404).send("user not found");
-    }
+    return res.json({
+      count: result.rows.length,
+      wines: result.rows
+    });
+  } catch (error) {
+    console.error("SELECT Failed: ", error);
+    res.status(500).send(error);
+  }
+});
 
-    let userID = result.rows[0].id;
+// Post a New Wine to User's Personal List
+app.post("/add-to-personal-list", async (req, res) => {
+  let { token } = req.cookies;
+  let username = tokenStorage[token];
 
-    let body = req.body;
-    console.log("Request Body:", body);
+  let body = req.body;
+  console.log("Request sent to Get Wine List with body: ", body);
+  let country = body["country_origin"];
+  let year = body["year"];
+  let wine = body["wine_name"];
+  let description = body["description"] ?? null;
 
-    let wineName = body["wineName"]
-    let postDescription = body["postDescription"];
-    let score = body["score"];
+  if (!country || year === undefined || year === null || !wine) {
+    res.status(400).send("Request body missing required information. Needs wine_name, country_origin, and year.");
+  }
 
-    let arr = [userID, wineName, postDescription, score];
-
-    if (!postDescription || !score) {
-        console.log("u didnt fill soemthing out properly try agn")
-        return res.status(400).send('some info was not completed... try again');
+  try {
+    let queryText = "INSERT INTO saved_wines(username, wine_name, country_origin, year";
+    let valuesText = "VALUES($1, $2, $3, $4"
+    let arr = [username, wine, country, year];
+    if (description) {
+      queryText += ", description) ";
+      valuesText += ", $5)";
+      arr.push(description);
     } else {
-        try {
-            await pool
-            .query(`INSERT INTO reviews(user_id, wine_name, description, score)
-                VALUES($1, $2, $3, $4)
-                RETURNING *`, arr)
-            .then(() => {
-                return res.status(200).send('ok u got it');
-            })
-        } catch (error) {
-            return res.status(500).send('something else went wrong');
-        }
-    } 
+      queryText += ") ";
+      valuesText += ") "
+    }
+    let finalQuery = queryText + valuesText + "RETURNING *";
+
+    let result = await pool.query(`${finalQuery}`, arr);
+    res.status(200).json({
+      message: "Successfully added new wine.",
+      wine: result.rows[0]
+    });
+  } catch (error) {
+    if (error.code === "1062") { // Duplicate entry error code for MariaDB
+      return res.status(409).send("This wine is already in your list.");
+    }
+    console.error("INSERT Failed: ", error);
+    res.status(500).send(error);
+  }
 });
 
 app.listen(port, hostname, () => {
     console.log(`http://${hostname}:${port}`);
 });
+
+
+// Utility Functions
+
+async function checkForDupWineInGlobalList(wine_name, country, year) {
+  try {
+    let result = await pool.query(
+      `SELECT average_score FROM global_wine_db WHERE wine_name = $1
+      country_origin = $2 year = $3`,
+      [wine_name, country, year]
+    );
+
+    return !(result.rows.length === 0)
+  } catch (error) {
+    throw error;
+  }
+}

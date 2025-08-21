@@ -40,15 +40,13 @@ signUpButton.addEventListener("click", (event) => {
         })
     })
     .then(response => {
-        if (response.ok) {
-            window.location.href = "/reviews";
-        } else {
+        if (!response.ok) {
             throw response;
         }
     })
     .then(data => {
+        window.location.href = "/reviews";
         console.log("Successfully created account")
-        console.log(data);
     })
     .catch(error => {
         console.log("Error with creating account")
