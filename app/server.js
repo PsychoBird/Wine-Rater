@@ -260,6 +260,29 @@ app.get("/get-all-reviews", async (req, res) => {
   }
 });
 
+app.get("/get-user-reviews", authorize, async (req, res) => {
+  let { token } = req.cookies;
+  let username = tokenStorage[token];
+  
+  try {
+    let result = await pool.query(
+      `SELECT reviews.id, reviews.wine_name, reviews.description, reviews.score, users.username
+        FROM reviews
+        JOIN users ON reviews.user_id = users.id
+        WHERE users.username = $1
+        ORDER BY reviews.id DESC`, [username]
+    );
+
+    if (result.rows.length === 0) {
+      return res.json({ "note": "no reviews here yet!"});
+    }
+
+    return res.json(result.rows);
+  } catch (error) {
+    return res.status(500).send("there was a server error sorry!");
+  }
+});
+
 // Post a New Review
 app.post("/add-new-review", async (req, res) => {
   let { token } = req.cookies;
@@ -371,6 +394,70 @@ app.post("/add-to-personal-list", async (req, res) => {
     }
     console.error("INSERT Failed: ", error);
     res.status(500).send(error);
+  }
+});
+
+// update user review (from their reviews in profile page)
+app.patch("/update-review/:id", authorize, async (req, res) => {
+  let { token } = req.cookies;
+  let username = tokenStorage[token];
+
+  try {
+    let userInfo = await pool.query(
+      `SELECT id FROM users WHERE username=$1`, [username]
+    )
+
+    if (userInfo.rows === 0) {
+      return res.status(400).send("user not found");
+    }
+
+    let userID = userInfo.rows[0].id;
+    let reviewID = req.params.id;
+    let { wineName, description, score } = req.body;
+
+    let fields = [];
+    let values= [];
+    let i = 1;
+
+    if (wineName !== undefined) {
+      fields.push(`wine_name = $${i++}`);
+      values.push(wineName);
+    };
+
+    if (description !== undefined) {
+      fields.push(`description = $${i++}`);
+      values.push(description);
+    };
+
+    if (score !== undefined) {
+      fields.push(`score = $${i++}`);
+      values.push(score);
+    };
+
+    if (fields.length === 0) {
+      return res.status(400).send("nothing was changed");
+    }
+
+    values.push(reviewID, userID);
+
+    let result = await pool.query(
+      `UPDATE reviews
+      SET ${fields.join(", ")}
+      WHERE id = $${i++} AND user_id = $${i}
+      RETURNING *`, values
+    );
+
+    if (result.rows === 0) {
+      return res.status(403).send("can't edit other people's reviews")
+    }
+
+    return res.status(200).json({
+      "note": `review ${reviewID} successfully updated!`,
+      "updated row": result.rows[0]
+    });
+  } catch (error) {
+    console.error("UPDATE Failed:", error);
+    return res.status(500).send("Server error");
   }
 });
 

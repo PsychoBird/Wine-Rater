@@ -249,6 +249,23 @@ body {
     padding-bottom: 10px;
 }
 
+#wineName, #score, #description {
+    padding: 20px;
+    border-radius: 10px;
+    width: 500px;
+    max-width: 1000px;
+}
+
+#submitReview {
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    background-color: #a85e5e;
+    border-radius: 6px;
+    color: white;
+}
+
 /*************** profile *******************/
 #profileContainer {
     width: 100%;
