@@ -294,10 +294,15 @@ app.post("/add-new-review", async (req, res) => {
           await pool
           .query(`INSERT INTO reviews(user_id, wine_name, description, score)
               VALUES($1, $2, $3, $4)
-              RETURNING *`, arr)
-          .then(() => {
-              return res.status(200).send('ok u got it');
-          })
+              RETURNING *`, arr);
+
+          await pool.query(
+            `INSERT INTO global_wine_db (wine_name, country_origin, year, average_score)
+            VALUES ($1, 'x', 1, $2)`,
+            [wineName, score]
+          );
+
+          return res.status(200).send('ok u got it');
       } catch (error) {
           return res.status(500).send('something else went wrong');
       }
@@ -329,6 +334,26 @@ app.get("/get-personal-list", async (req, res) => {
     res.status(500).send(error);
   }
 });
+
+//get global wine list
+app.get("/get-global-wines", async (req, res) => {
+  try {
+    let result = await pool.query(
+      `SELECT DISTINCT wine_name, country_origin, year, average_score
+       FROM global_wine_db
+       ORDER BY year DESC`
+    );
+
+    return res.json({
+      count: result.rows.length,
+      wines: result.rows
+    });
+  } catch (error) {
+    console.error("Selecting global wines failed ", error);
+    res.status(500).send(error);
+  }
+});
+
 
 // Post a New Wine to User's Personal List
 app.post("/add-to-personal-list", async (req, res) => {
