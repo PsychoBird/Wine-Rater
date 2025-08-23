@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS reviews (
     id SERIAL PRIMARY KEY,
     user_id INT NOT NULL,
     wine_name VARCHAR(255) NOT NULL,
-    post_description TEXT,
+    description TEXT,
     score INT NOT NULL CHECK (score >= 0 AND score <= 10),
     created_on DATE NOT NULL DEFAULT CURRENT_DATE
 );

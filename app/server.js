@@ -65,6 +65,10 @@ app.get("/profile-view", authorize, (req, res) => {
   res.sendFile(path.join(__dirname, "private", "profile.html"))
 });
 
+app.get("/profile-view/edit-review", authorize, (req, res) => {
+  res.sendFile(path.join(__dirname, "private", "edit-review.html"))
+});
+
 app.get("/wine-list", authorize, (req, res) => {
   res.sendFile(path.join(__dirname, "private", "wineList.html"))
 });
@@ -260,6 +264,7 @@ app.get("/get-all-reviews", async (req, res) => {
   }
 });
 
+// Get all reviews made by a single user
 app.get("/get-user-reviews", authorize, async (req, res) => {
   console.log("Received request to get user's reviews");
   let { token } = req.cookies;
@@ -271,7 +276,7 @@ app.get("/get-user-reviews", authorize, async (req, res) => {
         FROM reviews
         JOIN users ON reviews.user_id = users.id
         WHERE users.username = $1
-        ORDER BY reviews.id DESC`, [username]
+        ORDER BY reviews.created_on DESC, reviews.id DESC`, [username]
     );
 
     if (result.rows.length === 0) {
@@ -281,6 +286,32 @@ app.get("/get-user-reviews", authorize, async (req, res) => {
     return res.json(result.rows);
   } catch (error) {
     return res.status(500).send("there was a server error sorry!");
+  }
+});
+
+// Get review information based on a single review ID
+app.get("/get-single-review-info", authorize, async (req, res) => {
+  console.log("Received request to get info for single review");
+  let { token } = req.cookies;
+  let username = tokenStorage[token];
+  let reviewId = req.query.id;
+
+  if (!reviewId) return res.status(400).send("Missing review ID, invalid request");
+
+  try {
+    let result = await pool.query(
+      `SELECT r.wine_name, r.description, r.score
+       FROM reviews r
+       JOIN users u ON r.user_id = u.id
+       WHERE r.id=$1 AND u.username=$2`, [reviewId, username]
+    );
+
+    if (result.rowCount === 0) return res.status(404).send("Review not found");
+
+    return res.json(result.rows[0]);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send("Something went wrong in the server");
   }
 });
 
@@ -331,6 +362,80 @@ app.post("/add-new-review", async (req, res) => {
       } catch (error) {
           return res.status(500).send('something else went wrong');
       }
+  }
+});
+
+// Update user review (from their reviews in profile page)
+app.patch("/update-review/:id", authorize, async (req, res) => {
+  console.log("Received request to edit review");
+  let { token } = req.cookies;
+  let username = tokenStorage[token];
+  let reviewID = req.params.id;
+
+  try {
+    let userInfo = await pool.query(
+      `SELECT id FROM users WHERE username=$1`, [username]
+    );
+
+    if (userInfo.rowCount === 0) {
+      return res.status(400).send("user not found");
+    }
+
+    let userID = userInfo.rows[0].id;
+
+    let currentReviewInfo = await pool.query(
+      `SELECT wine_name, description, score
+       FROM reviews WHERE user_id=$1 AND id=$2`, [userID, reviewID]
+    );
+
+    if (currentReviewInfo.rowCount === 0) return res.status(400).send("Review not found for user");
+
+    let { currentWineName, currentDescription, currentScore } = currentReviewInfo.rows[0];
+    let { wineName, description, score } = req.body;
+
+    let fields = [];
+    let values= [];
+    let i = 1;
+
+    if (wineName !== currentWineName) {
+      fields.push(`wine_name = $${i++}`);
+      values.push(wineName);
+    };
+
+    if (description !== currentDescription) {
+      fields.push(`description = $${i++}`);
+      values.push(description);
+    };
+
+    if (score !== currentScore) {
+      fields.push(`score = $${i++}`);
+      values.push(score);
+    };
+
+    if (fields.length === 0) {
+      return res.status(400).send("nothing was changed");
+    }
+
+    values.push(reviewID, userID);
+
+    let result = await pool.query(
+      `UPDATE reviews
+      SET ${fields.join(", ")}
+      WHERE id = $${i++} AND user_id = $${i}
+      RETURNING *`, values
+    );
+
+    if (result.rows === 0) {
+      return res.status(403).send("can't edit other people's reviews")
+    }
+
+    return res.status(200).json({
+      "note": `review ${reviewID} successfully updated!`,
+      "updated row": result.rows[0]
+    });
+  } catch (error) {
+    console.error("UPDATE Failed:", error);
+    return res.status(500).send("Server error");
   }
 });
 
@@ -424,71 +529,6 @@ app.post("/add-to-personal-list", async (req, res) => {
     }
     console.error("INSERT Failed: ", error);
     res.status(500).send(error);
-  }
-});
-
-// update user review (from their reviews in profile page)
-app.patch("/update-review/:id", authorize, async (req, res) => {
-  console.log("Received request to edit review");
-  let { token } = req.cookies;
-  let username = tokenStorage[token];
-
-  try {
-    let userInfo = await pool.query(
-      `SELECT id FROM users WHERE username=$1`, [username]
-    )
-
-    if (userInfo.rows === 0) {
-      return res.status(400).send("user not found");
-    }
-
-    let userID = userInfo.rows[0].id;
-    let reviewID = req.params.id;
-    let { wineName, description, score } = req.body;
-
-    let fields = [];
-    let values= [];
-    let i = 1;
-
-    if (wineName !== undefined) {
-      fields.push(`wine_name = $${i++}`);
-      values.push(wineName);
-    };
-
-    if (description !== undefined) {
-      fields.push(`description = $${i++}`);
-      values.push(description);
-    };
-
-    if (score !== undefined) {
-      fields.push(`score = $${i++}`);
-      values.push(score);
-    };
-
-    if (fields.length === 0) {
-      return res.status(400).send("nothing was changed");
-    }
-
-    values.push(reviewID, userID);
-
-    let result = await pool.query(
-      `UPDATE reviews
-      SET ${fields.join(", ")}
-      WHERE id = $${i++} AND user_id = $${i}
-      RETURNING *`, values
-    );
-
-    if (result.rows === 0) {
-      return res.status(403).send("can't edit other people's reviews")
-    }
-
-    return res.status(200).json({
-      "note": `review ${reviewID} successfully updated!`,
-      "updated row": result.rows[0]
-    });
-  } catch (error) {
-    console.error("UPDATE Failed:", error);
-    return res.status(500).send("Server error");
   }
 });
 
