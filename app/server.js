@@ -273,6 +273,10 @@ app.get("/get-user-reviews", authorize, async (req, res) => {
         ORDER BY reviews.id DESC`, [username]
     );
 
+    if (result.rows.length === 0) {
+      return res.json({ "note": "no reviews here yet!"});
+    }
+
     return res.json(result.rows);
   } catch (error) {
     return res.status(500).send("there was a server error sorry!");
