@@ -397,17 +397,17 @@ app.patch("/update-review/:id", authorize, async (req, res) => {
     let values= [];
     let i = 1;
 
-    if (wineName !== currentWineName) {
+    if (wineName !== undefined || wineName !== currentWineName) {
       fields.push(`wine_name = $${i++}`);
       values.push(wineName);
     };
 
-    if (description !== currentDescription) {
+    if (description !== undefined || description !== currentDescription) {
       fields.push(`description = $${i++}`);
       values.push(description);
     };
 
-    if (score !== currentScore) {
+    if (score !== undefined || score !== currentScore) {
       fields.push(`score = $${i++}`);
       values.push(score);
     };

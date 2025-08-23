@@ -9,24 +9,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="header-nav">
-        <h1 class="logo">Corked</h1>
-        <header id="site-header" class="loading"></header>
-    </div>
-
-    <div id="profileContainer">
-        <div id="profileInfo">
-            <img class="image-box" src="/assets/default_profile.png"/>
-            <h2 id="name-text"></h2>
-            <h3 id="email-text"></h3>
-            <hr>
-            <h3>Username: <p id="username-text"></p></h3>
+    <div class="form-container">
+        <div class="form-box">
+            <h1 class="title-text">Edit Review</h1>
+            <form class="styled-form">
+                <p>Wine Name</p>
+                <input id="wine-name" type="text" required />
+            </form>
         </div>
-        <button id="logout">Logout</button>
     </div>
 
-<script src="/js/header.js"></script>
 <script src="/js/edit-review.js"></script>
-<script src="/js/logout.js"></script>
 </body>
 </html>

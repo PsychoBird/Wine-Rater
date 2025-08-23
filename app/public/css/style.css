@@ -61,7 +61,7 @@ body {
     font-family: "Raleway";
 }
 
-.logo {
+.title-text {
     font-size: 70px;
     margin: 30px;
     font-weight: 400;
@@ -111,15 +111,15 @@ body {
     margin: 0 auto;
 }
 
-/******************** Login.html ************************************/
+/******************** Forms ************************************/
 
-.login-container {
+.form-container {
     width: 100%;
     max-width: 400px;
     padding: 20px;
 }
 
-.login-box {
+.form-box {
     background-color: rgb(41, 9, 12);
     border-radius: 16px;
     padding: 30px;
@@ -127,7 +127,7 @@ body {
     text-align: center;
 }
 
-.login-form input {
+.styled-form input {
     width: 100%;
     padding: 12px;
     margin-bottom: 12px;
@@ -138,12 +138,12 @@ body {
     font-size: 1rem;
 }
 
-.login-form input:focus {
+.styled-form input:focus {
     outline: none;
     border: 2px solid #a85e5e;
 }
 
-.user-login-error  {
+.form-error  {
     color: #f3061a;
     font-size: 0.9rem;
     margin-top: -6px;
@@ -151,7 +151,7 @@ body {
 }
 
 /* Login Button */
-.login-form button {
+.styled-form button {
     width: 100%;
     padding: 12px;
     margin-top: 8px;
@@ -165,34 +165,34 @@ body {
     transition: background 0.3s ease;
 }
 
-.login-form button:hover {
+.styled-form button:hover {
     background-color: #843b3b;
 }
 
-.login-form input,
-.login-form button {
+.styled-form input,
+.styled-form button {
     width: 100%;
     box-sizing: border-box;
 }
 
-.login-form p {
+.styled-form p {
     margin: 0 0 8px 0;
     text-align: left;
     font-weight: bold;
     color: #f5d6ba;
 }
 
-.signup-text {
+.form-link-text {
     margin-top: 12px;
     font-size: 0.9rem;
 }
 
-.signup-text a {
+.form-link-text a {
     color: #f5d6ba;
     text-decoration: none;
 }
 
-.signup-text a:hover {
+.form-link-text a:hover {
     text-decoration: underline;
 }
 
