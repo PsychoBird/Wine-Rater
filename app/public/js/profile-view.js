@@ -8,6 +8,7 @@ let defaultProfileData = {
 let nameTextBox = document.getElementById("name-text");
 let emailTextBox = document.getElementById("email-text");
 let usernameTextBox = document.getElementById("username-text");
+let userId = null;
 
 addEventListener("load", async () => {
     try {
@@ -20,6 +21,7 @@ addEventListener("load", async () => {
         nameTextBox.textContent = `${data.first_name} ${data.last_name}`;
         emailTextBox.textContent = data.email;
         usernameTextBox.textContent = data.username;
+        userId = data.id;
     } catch (err) {
         console.error(err);
     }

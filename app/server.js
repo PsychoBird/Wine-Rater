@@ -226,7 +226,7 @@ app.get("/profile", authorize, async (req, res) => {
   console.log("Logged username:", username);
   try {
       let result = await pool.query(
-          "SELECT first_name, last_name, email, username FROM users WHERE username = $1",
+          "SELECT id, first_name, last_name, email, username FROM users WHERE username = $1",
           [username]  
       );
       console.log("Result: ", result.rows);
