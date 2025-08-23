@@ -148,7 +148,7 @@ app.post("/create-account", async (req, res) => {
 
   // Auto Login
   let token = makeToken();
-  console.log(`Generated Token: ${token}\nFor User: ${username}`);
+  console.log(`Generated Token: ${token}\nFor User: ${username}\n`);
   tokenStorage[token] = username;
 
   return res.cookie("token", token, cookieOptions).status(201).send("Account created and user logged in successfully")
@@ -229,7 +229,7 @@ app.get("/profile", authorize, async (req, res) => {
           "SELECT first_name, last_name, email, username FROM users WHERE username = $1",
           [username]  
       );
-      console.log(result);
+      console.log("Result: ", result.rows);
       if (result.rows.length === 0) {
           return res.status(404).send("User not found");
       }
@@ -252,7 +252,7 @@ app.get("/get-all-reviews", async (req, res) => {
         ORDER BY reviews.id DESC`
     );
 
-    console.log("Result: ", result.rows);
+    console.log("Number of Results Selected: ", result.rowCount);
     return res.json(result.rows);
   } catch (error) {
       console.error("SELECT Failed: ", error);
@@ -261,6 +261,7 @@ app.get("/get-all-reviews", async (req, res) => {
 });
 
 app.get("/get-user-reviews", authorize, async (req, res) => {
+  console.log("Received request to get user's reviews");
   let { token } = req.cookies;
   let username = tokenStorage[token];
   
@@ -285,6 +286,7 @@ app.get("/get-user-reviews", authorize, async (req, res) => {
 
 // Post a New Review
 app.post("/add-new-review", async (req, res) => {
+  console.log("Received request to add new review for user");
   let { token } = req.cookies;
   let username = tokenStorage[token];
   console.log("Logged username:", username);
@@ -334,6 +336,7 @@ app.post("/add-new-review", async (req, res) => {
 
 // Get all Wines in Personal List
 app.get("/get-personal-list", async (req, res) => {
+  console.log("Received request to get user's personal wine list");
   let { token } = req.cookies;
   let username = tokenStorage[token];
 
@@ -360,6 +363,7 @@ app.get("/get-personal-list", async (req, res) => {
 
 //get global wine list
 app.get("/get-global-wines", async (req, res) => {
+  console.log("Received request to get global wine list");
   try {
     let result = await pool.query(
       `SELECT DISTINCT wine_name, country_origin, year, average_score
@@ -380,6 +384,7 @@ app.get("/get-global-wines", async (req, res) => {
 
 // Post a New Wine to User's Personal List
 app.post("/add-to-personal-list", async (req, res) => {
+  console.log("Received request to add wine to user's personal list");
   let { token } = req.cookies;
   let username = tokenStorage[token];
 
@@ -424,6 +429,7 @@ app.post("/add-to-personal-list", async (req, res) => {
 
 // update user review (from their reviews in profile page)
 app.patch("/update-review/:id", authorize, async (req, res) => {
+  console.log("Received request to edit review");
   let { token } = req.cookies;
   let username = tokenStorage[token];
 
