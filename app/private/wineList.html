@@ -1,23 +1,90 @@
 <!DOCTYPE html>
 <html>
 
-    <head>
-        <title>Corked | Saved Wines</title>
-        <link rel="stylesheet" href="/css/style.css" />
-        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-        <link href="https://fonts.googleapis.com/css2?family=Sail&display=swap" rel="stylesheet">
-        <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-    </head>
+<head>
+    <title>Corked | Global Wines</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sail&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+</head>
 
-    <body>
-        <div class="header-nav">
-            <h1 class="logo">Corked</h1>
-            <header id="site-header" class="loading"></header>
-        </div>
+<body>
+    <div class="header-nav">
+        <h1 class="logo">Corked</h1>
+        <header id="site-header" class="loading"></header>
+    </div>
 
-        
-        <p>nothing here yet!! under construction</p>
-        <script src="/js/header.js"></script>
-    </body>
+    <div class="table-container">
+        <table id="wines-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Score</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+
+    <p id="empty-message" style="display:none;">There are no wines in global_wine_db (you shouldn't be seeing this).</p>
+
+    <div class="button-container">
+        <button id="randomWineBtn" class="wine-button">
+            🍷 Recommend Me a Random Wine
+        </button>
+    </div>
+
+    <script src="/js/header.js"></script>
+    <script>
+        let winesData = [];
+
+        async function loadWines() {
+            try {
+                let res = await fetch("/get-global-wines", { method: "GET" });
+
+                if (!res.ok) {
+                    document.getElementById("empty-message").innerText = "Failed to get global_wine_db!!!";
+                    document.getElementById("empty-message").style.display = "block";
+                    return;
+                }
+
+                let data = await res.json();
+
+                if (data.count === 0) {
+                    document.getElementById("empty-message").style.display = "block";
+                    return;
+                }
+
+                winesData = data.wines; // save for random pick (the recommend me random wine!)
+                let tbody = document.querySelector("#wines-table tbody");
+                tbody.innerHTML = "";
+
+                data.wines.forEach(wine => {
+                    let row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td>${wine.wine_name}</td>
+                        <td>${wine.average_score}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            } catch (error) {
+                document.getElementById("empty-message").innerText = "Error loading global wines";
+                document.getElementById("empty-message").style.display = "block";
+            }
+        }
+
+        // recommend em random wine, which is saved from above to save on db calls
+        document.getElementById("randomWineBtn").addEventListener("click", () => {
+            if (winesData.length === 0) return alert("No wines available to recommend!");
+
+            let randomWine = winesData[Math.floor(Math.random() * winesData.length)];
+            alert(`Corked Recommendation: ${randomWine.wine_name} - ${randomWine.average_score}`);
+        });
+
+        loadWines();
+    </script>
+</body>
 
 </html>
