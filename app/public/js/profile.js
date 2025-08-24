@@ -18,9 +18,9 @@ window.addEventListener("load", async () => {
         
         let data = await res.json();
 
-        nameTextBox.textContent = `${data.first_name} ${data.last_name}`;
-        emailTextBox.textContent = data.email;
-        usernameTextBox.textContent = data.username;
+        nameTextBox.textContent = `Name: ${data.first_name} ${data.last_name}`;
+        emailTextBox.textContent = `Email: ${data.email}`;
+        usernameTextBox.textContent = `Username: ${data.username}`;
         userId = data.id;
 
         loadUserReviews();
