@@ -8,6 +8,7 @@ submit.addEventListener("click", async () => {
 
     if (!wineName || !description || isNaN(parseInt(score))) {
         msg.textContent = "please enter in all fields completely!";
+        return;
     } 
 
     try {

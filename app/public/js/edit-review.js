@@ -10,6 +10,53 @@ if (!reviewId) {
 console.log("Editing Review Id: ", reviewId);
 setUpEditReviewPage(reviewId);
 
+let editButton = document.getElementById("submit-edits");
+let cancelButton = document.getElementById("cancel-edits");
+let nameInput = document.getElementById("edit-name");
+let scoreInput = document.getElementById("edit-score");
+let descInput = document.getElementById("edit-description");
+let errorSpan = document.getElementById("error");
+
+cancelButton.addEventListener("click", () => {
+    window.location.href = "/profile-view";
+});
+
+editButton.addEventListener("click", async event => {
+    event.preventDefault(); // Stop page reload
+    
+    let nameVal = nameInput.value.trim();
+    let scoreVal = scoreInput.value.trim();
+    let descriptionVal = descInput.value.trim();
+
+    if (!nameVal || !descriptionVal || isNaN(parseInt(scoreVal))) {
+        errorSpan.textContent = "Please enter in all fields completely!";
+        return;
+    }
+
+    try {
+        let result = await fetch(`/update-review/${reviewId}`, {
+            method: "PATCH", 
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                wineName: nameVal, 
+                description: descriptionVal, 
+                score: parseInt(scoreVal, 10)
+            })
+        });
+
+        if (result.ok) {
+            let responseBody = await result.json();
+            alert(responseBody.note);
+            window.location.href = "/profile-view";
+        } else {
+            errorSpan.textContent = `Error making edits: ${await result.text()}`;
+        }
+    } catch (error) {
+        console.error(error);
+        errorSpan.textContent = "Something went wrong. Please try again."
+    }
+});
+
 async function setUpEditReviewPage(id) {
     let result;
     try {
@@ -28,5 +75,7 @@ async function setUpEditReviewPage(id) {
         window.location.href = "/profile-view";
     }
 
-    console.log(result);
+    nameInput.value = result.wine_name;
+    scoreInput.value = result.score;
+    descInput.value = result.description;
 }

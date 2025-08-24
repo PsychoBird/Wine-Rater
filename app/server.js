@@ -390,24 +390,24 @@ app.patch("/update-review/:id", authorize, async (req, res) => {
 
     if (currentReviewInfo.rowCount === 0) return res.status(400).send("Review not found for user");
 
-    let { currentWineName, currentDescription, currentScore } = currentReviewInfo.rows[0];
+    let { wine_name: currentWineName, description: currentDescription, score: currentScore } = currentReviewInfo.rows[0];
     let { wineName, description, score } = req.body;
 
     let fields = [];
     let values= [];
     let i = 1;
 
-    if (wineName !== undefined || wineName !== currentWineName) {
+    if (wineName && wineName !== currentWineName) {
       fields.push(`wine_name = $${i++}`);
       values.push(wineName);
     };
 
-    if (description !== undefined || description !== currentDescription) {
+    if (description && description !== currentDescription) {
       fields.push(`description = $${i++}`);
       values.push(description);
     };
 
-    if (score !== undefined || score !== currentScore) {
+    if (score && score !== currentScore) {
       fields.push(`score = $${i++}`);
       values.push(score);
     };
@@ -430,7 +430,7 @@ app.patch("/update-review/:id", authorize, async (req, res) => {
     }
 
     return res.status(200).json({
-      "note": `review ${reviewID} successfully updated!`,
+      "note": `Review for ${wineName} successfully updated!`,
       "updated row": result.rows[0]
     });
   } catch (error) {

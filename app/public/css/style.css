@@ -127,7 +127,8 @@ body {
     text-align: center;
 }
 
-.styled-form input {
+.styled-form input,
+.styled-form textarea {
     width: 100%;
     padding: 12px;
     margin-bottom: 12px;
@@ -138,7 +139,8 @@ body {
     font-size: 1rem;
 }
 
-.styled-form input:focus {
+.styled-form input:focus
+.styled-form textarea:focus {
     outline: none;
     border: 2px solid #a85e5e;
 }
@@ -170,16 +172,25 @@ body {
 }
 
 .styled-form input,
+.styled-form textarea,
 .styled-form button {
     width: 100%;
     box-sizing: border-box;
 }
 
 .styled-form p {
-    margin: 0 0 8px 0;
     text-align: left;
     font-weight: bold;
     color: #f5d6ba;
+    margin: 0 0 8px 0;
+
+}
+.styled-form label {
+    display: block;
+    text-align: left;
+    font-weight: bold;
+    color: #f5d6ba;
+    margin: 0 0 8px 0;
 }
 
 .form-link-text {
@@ -210,6 +221,7 @@ body {
     width: 100%;
     box-shadow: 0 8px 20px rgba(41, 9, 12);
     margin-bottom: 50px;
+    position: relative;
 }
 
 .review-meta {
@@ -266,7 +278,7 @@ body {
     color: white;
 }
 
-/*************** profile *******************/
+/*************** Profile *******************/
 #profileContainer {
     width: 100%;
     max-width: 400px;
@@ -360,4 +372,21 @@ body {
 
 .wine-button:hover {
     background-color: #843b3b;
+}
+
+.edit-button {
+    position: absolute;
+    bottom: 20px;   /* same padding as the review-box */
+    right: 20px;
+    padding: 8px 16px;
+    font-size: 14px;
+    border: none;
+    border-radius: 8px;
+    background-color: #f5d6ba;
+    color: rgb(31, 4, 7);
+    cursor: pointer;
+}
+
+.edit-button:hover {
+    background-color: #e0c4a5;
 }
