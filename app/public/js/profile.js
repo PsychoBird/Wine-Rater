@@ -34,7 +34,7 @@ async function loadUserReviews() {
         let result = await fetch(`/get-user-reviews`);
         let userReviews = await result.json();
 
-        let reviewsDisplay = document.getElementById("reviews-display");
+        let reviewsDisplay = document.getElementById("personal-reviews-display");
 
         userReviews.forEach(review => {
             let newDiv = document.createElement("div");
