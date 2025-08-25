@@ -10,23 +10,34 @@
 </head>
 <body>
     <div class="header-nav">
-        <h1 class="logo">Corked</h1>
+        <h1 class="title-text">Corked</h1>
         <header id="site-header" class="loading"></header>
     </div>
 
     <div id="profileContainer">
         <div id="profileInfo">
             <img class="image-box" src="/assets/default_profile.png"/>
-            <h2 id="name-text"></h2>
-            <h3 id="email-text"></h3>
-            <hr>
-            <h3>Username: <p id="username-text"></p></h3>
+            <p id="name-text"></h2>
+            <p id="email-text"></h3>
+            <p id="username-text"></p>
         </div>
         <button id="logout">Logout</button>
     </div>
 
+    <div id="profile-content-container">
+        <div id="saved-wines-container">
+            <h2 class="title-text">My Saved Wines</h2>
+            <div id="saved-wines-display"></div>
+        </div>
+        <div id="profile-review-container">
+            <div id="personal-reviews-display">
+                <h2 class="title-text">My Reviews</h1>
+            </div>
+        </div>
+    </div>
+
 <script src="/js/header.js"></script>
-<script src="/js/profile-view.js"></script>
+<script src="/js/profile.js"></script>
 <script src="/js/logout.js"></script>
 </body>
 </html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Corked | Edit Review</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Sail&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="form-container">
+        <div class="form-box">
+            <h1 class="title-text">Edit Review</h1>
+            <form class="styled-form">
+                <label for="edit-name">Wine Name</label>
+                <input id="edit-name" type="text" required />
+                <label for="edit-score">Score</label>
+                <input id="edit-score" type="number" required />
+                <label for="edit-description">Description</label>
+                <textarea id="edit-description" style="resize: none;" required></textarea>
+                <span id="error" class="form-error"></span>
+                <div id="button-container" style="display: flex; gap: 10px; justify-content: center;">
+                    <button id="cancel-edits" type="button">Cancel</button>
+                    <button id="submit-edits" type="submit">Submit Edits</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+<script src="/js/edit-review.js"></script>
+</body>
+</html>

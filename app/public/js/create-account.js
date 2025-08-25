@@ -4,7 +4,7 @@ let errorSpan = document.getElementById("error");
 signUpButton.addEventListener("click", (event) => {
     event.preventDefault();
     
-    let requiredInputs = Array.from(document.querySelectorAll(".login-form input[required]"));
+    let requiredInputs = Array.from(document.querySelectorAll(".styled-form input[required]"));
     let inputsFilled = true;
 
     requiredInputs.forEach(input => {
