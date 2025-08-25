@@ -1,9 +1,11 @@
-let defaultProfileData = {
+const defaultProfileData = {
     firstName: "Jane",
     lastName: "Doe",
     email: "doe@gmail.com",
     username: "ThatWineGoodDoe"
 };
+
+const savedWineHeaders = ["Name", "Country", "Year", "Description"];
 
 let nameTextBox = document.getElementById("name-text");
 let emailTextBox = document.getElementById("email-text");
@@ -23,6 +25,7 @@ window.addEventListener("load", async () => {
         usernameTextBox.textContent = `Username: ${data.username}`;
         userId = data.id;
 
+        loadSavedWines();
         loadUserReviews();
     } catch (err) {
         console.error(err);
@@ -73,6 +76,44 @@ async function loadUserReviews() {
         });
     } catch (error) {
         console.error(error);
-        document.getElementById("reviews-display").textContent = "Error loading user's reviews."
+        document.getElementById("personal-reviews-display").textContent = "Error loading user's reviews."
+    }
+}
+
+async function loadSavedWines() {
+    const saved_wines_display = document.getElementById("saved-wines-display");
+    try {
+        let result = await fetch("/get-personal-list");
+        let saved_wines = await result.json();
+
+        if (saved_wines.count === 0) {
+            saved_wines_display.textContent = "No wines saved yet for this user. Add a wine or review one!";
+        } else {
+            const wine_table = document.createElement("table");
+
+            const headerRow = document.createElement("tr");
+            savedWineHeaders.forEach(header => {
+                const headerElement = document.createElement("th");
+                headerElement.textContent = header;
+                headerRow.appendChild(headerElement);
+            });
+            wine_table.appendChild(headerRow);
+            
+            saved_wines.wines.forEach(wineObj => {
+                console.log(wineObj);
+                const row = document.createElement("tr");
+                Object.values(wineObj).forEach(value => {
+                    const td = document.createElement("td");
+                    td.textContent = value;
+                    row.appendChild(td);
+                });
+                wine_table.appendChild(row)
+            });
+
+            saved_wines_display.appendChild(wine_table);
+        }
+    } catch (error) {
+        console.error(error);
+        saved_wines_display.textContent = "Error loading saved wine list."
     }
 }

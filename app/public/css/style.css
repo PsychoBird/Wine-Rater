@@ -339,20 +339,53 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    max-width: 1200px;
+    max-width: 2000px;
     margin: 40px auto;
     padding: 20px;
     width: 70%;
 }
 
-#personal-wine-display {
+#saved-wines-container,
+#profile-review-container {
+    flex: 1;
+    max-width: 50%;
+}
+
+#saved-wines-display {
     background-color: rgb(31, 4, 7);
     border-radius: 16px;
     padding: 30px;
-    width: 25%;
+    width: 100%;
     box-shadow: 0 8px 20px rgba(41, 9, 12);
     height: fit-content;
     text-align: center;
+}
+
+#saved-wines-display table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    border-radius: 12px;
+    overflow: hidden;
+    margin: 0;
+    display: inline-block;
+}
+
+#saved-wines-display th {
+    background-color: rgb(41, 9, 12);
+    color: #f5d6ba; /* warm beige text */
+    padding: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    text-align: left;
+}
+
+#saved-wines-display td {
+    background-color: rgb(51, 15, 19);
+    color: #f5d6ba;
+    padding: 10px 12px;
+    font-size: 14px;
+    border-bottom: 1px solid rgba(245, 214, 186, 0.2);
 }
 
 #profile-review-container {
