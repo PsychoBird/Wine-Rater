@@ -301,7 +301,6 @@ body {
 #profileContainer {
     width: 100%;
     max-width: 1000px;
-    padding: 20px;
 }
 
 #profileInfo {
@@ -364,7 +363,6 @@ body {
     justify-content: space-between;
     align-items: flex-start;
     max-width: 2000px;
-    margin: 40px auto;
     padding: 20px;
     width: 70%;
 }
@@ -372,7 +370,7 @@ body {
 #saved-wines-container,
 #profile-review-container {
     flex: 1;
-    max-width: 50%;
+    max-width: 45%;
 }
 
 #saved-wines-display {
