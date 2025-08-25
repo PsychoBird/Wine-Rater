@@ -62,12 +62,25 @@ body {
 }
 
 .title-text {
-    font-size: 70px;
+    font-size: 90px;
     margin: 30px;
     font-weight: 400;
     color: #f5d6ba;
     text-align: center;
     font-family: "Sail", system-ui;
+}
+
+.smaller-title-text {
+    font-size: 35px;
+    padding: 30px;
+}
+
+.nav-div {
+    height: 0.5px;                
+    background-color: #f5d6ba; 
+    width: 75%;                
+    margin: 20px 0;
+    border-radius: 0.5px
 }
 
 /************************** Header *******************************/
@@ -98,6 +111,10 @@ body {
 #site-header nav a {
   text-decoration: none;
   color: #fff;
+}
+
+#site-header a:hover{
+    text-decoration: underline;
 }
 
 /********************** General Use *********************/
@@ -314,8 +331,15 @@ body {
     background-color: #a85e5e;
     border-radius: 6px;
     color: white;
-    width: 100%;
+    width: 10%;
     font-family: "Playfair Display";
+}
+
+#topRow {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .edit-button {
