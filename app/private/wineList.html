@@ -17,8 +17,8 @@
 
     <div class="nav-div"></div>
 
-    <div class="table-container">
-        <table id="wines-table">
+    <div id="saved-wines-container">
+        <table id="saved-wines-display">
             <thead>
                 <tr>
                     <th>Name</th>
@@ -28,7 +28,7 @@
             <tbody>
             </tbody>
         </table>
-    </div>
+    </div>  
 
     <p id="empty-message" style="display:none;">There are no wines in global_wine_db (you shouldn't be seeing this).</p>
 
@@ -60,7 +60,7 @@
                 }
 
                 winesData = data.wines; // save for random pick (the recommend me random wine!)
-                let tbody = document.querySelector("#wines-table tbody");
+                let tbody = document.querySelector("#saved-wines-display  tbody");
                 tbody.innerHTML = "";
 
                 data.wines.forEach(wine => {
