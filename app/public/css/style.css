@@ -418,6 +418,47 @@ body {
 
 /*************** All Wines *******************/
 
+.table-container {
+    width: 90%;
+    max-width: 1000px;
+    margin: 40px auto;
+    background-color: rgb(41, 9, 12);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 8px 20px rgba(41, 9, 12);
+    overflow-x: auto;
+}
+
+#wines-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: "Raleway", sans-serif;
+    color: #fff;
+}
+
+#wines-table thead {
+    background-color: #a85e5e; 
+}
+
+#wines-table th {
+    padding: 12px;
+    text-align: left;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #f5d6ba;
+    border-bottom: 2px solid #843b3b;
+}
+
+#wines-table td {
+    padding: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    font-size: 0.95rem;
+    line-height: 1.4;
+}
+
+#wines-table tbody tr:nth-child(even) {
+    background-color: rgba(255, 255, 255, 0.05);
+}
 
 .button-container {
     margin-top: 20px;
