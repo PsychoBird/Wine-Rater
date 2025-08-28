@@ -9,8 +9,8 @@ const fs = require("fs");
 const { count } = require("console");
 
 const app = express();
-const port = 3000;
-const hostname = "localhost";
+const port = process.env.PORT || 4000 
+const hostname = "0.0.0.0";
 
 const Pool = pg.Pool;
 const config = JSON.parse(fs.readFileSync('../env.json'));
@@ -533,9 +533,8 @@ app.post("/add-to-personal-list", async (req, res) => {
 });
 
 app.listen(port, hostname, () => {
-    console.log(`http://${hostname}:${port}`);
-});
-
+  console.log(`Example app listening on port ${port}`)
+})
 
 // Utility Functions
 
