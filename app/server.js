@@ -539,7 +539,7 @@ app.post("/add-to-personal-list", async (req, res) => {
 });
 
 app.listen(port, hostname, () => {
-  console.log(`Example app listening on port ${port}`)
+  console.log(`App listening at http://localhost:${port}.`)
 })
 
 // Utility Functions
@@ -547,8 +547,10 @@ app.listen(port, hostname, () => {
 async function checkForDupWineInGlobalList(wine_name, country, year) {
   try {
     let result = await pool.query(
-      `SELECT average_score FROM global_wine_db WHERE wine_name = $1
-      country_origin = $2 year = $3`,
+      `SELECT average_score FROM global_wine_db 
+      WHERE wine_name = $1
+        AND country_origin = $2 
+        AND year = $3`,
       [wine_name, country, year]
     );
 

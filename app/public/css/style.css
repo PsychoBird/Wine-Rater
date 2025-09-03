@@ -280,7 +280,7 @@ body {
     padding-bottom: 10px;
 }
 
-#wineName, #score, #description {
+#wineName, #score, #description, #country, #year {
     padding: 20px;
     border-radius: 10px;
     width: 500px;

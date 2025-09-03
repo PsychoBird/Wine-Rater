@@ -3,11 +3,13 @@ let submit = document.getElementById("submitReview");
 submit.addEventListener("click", async () => {
     let wineName = document.getElementById("wineName").value.trim();
     let score = document.getElementById("score").value;
+    let country = document.getElementById("country").value.trim();
+    let year = document.getElementById("year").value;
     let description = document.getElementById("description").value.trim();
     let msg = document.getElementById("reviewMsg");
 
-    if (!wineName || !description || isNaN(parseInt(score))) {
-        msg.textContent = "please enter in all fields completely!";
+    if (!wineName || !description || isNaN(parseInt(score)) || !country || isNaN(parseInt(year))) {
+        msg.textContent = "Please enter in all fields completely!";
         return;
     } 
 
@@ -18,7 +20,9 @@ submit.addEventListener("click", async () => {
             body: JSON.stringify({
                 wineName, 
                 postDescription: description, 
-                score
+                score,
+                country,
+                year
             })
         });
 
@@ -28,6 +32,8 @@ submit.addEventListener("click", async () => {
             document.getElementById("wineName").value = "";
             document.getElementById("score").value = "";
             document.getElementById("description").value = "";
+            document.getElementById("country").value = "";
+            document.getElementById("year").value = "";
         } else {
             msg.textContent = `error!error! ${await res.text()}`;
         }
