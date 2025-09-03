@@ -339,6 +339,8 @@ app.post("/add-new-review", async (req, res) => {
   let wineName = body["wineName"]
   let postDescription = body["postDescription"];
   let score = body["score"];
+  let country = body["country"];
+  let year = body["year"];
 
   let arr = [userID, wineName, postDescription, score];
 
@@ -352,11 +354,15 @@ app.post("/add-new-review", async (req, res) => {
               VALUES($1, $2, $3, $4)
               RETURNING *`, arr);
 
-          await pool.query(
-            `INSERT INTO global_wine_db (wine_name, country_origin, year, average_score)
-            VALUES ($1, 'x', 1, $2)`,
-            [wineName, score]
-          );
+          if (checkForDupWineInGlobalList(wineName,)) {
+            await pool.query(
+              `INSERT INTO global_wine_db (wine_name, country_origin, year, average_score)
+              VALUES ($1, $2, $3, $4)`,
+              [wineName, country, year, score]
+            );
+          } else {
+            updateAverageScore(wine_name, country, year)
+          }
 
           return res.status(200).send('ok u got it');
       } catch (error) {
@@ -547,6 +553,28 @@ async function checkForDupWineInGlobalList(wine_name, country, year) {
     );
 
     return !(result.rows.length === 0)
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function updateAverageScore(wine_name, country, year) {
+  let arr = [wine_name, country, year];
+
+  try {
+    let result = await pool.query(
+      `UPDATE global_wine_db g
+      SET average_score = sub.avg_score
+      FROM (
+        SELECT ROUND(AVG(r.score))::INT
+        FROM reviews r
+        WHERE r.wine_name = $1
+      ) sub
+       WHERE g.wine_name = $1
+        AND  g.country_origin = $2
+        AND  g.year = $3;`
+      , arr
+    );
   } catch (error) {
     throw error;
   }
