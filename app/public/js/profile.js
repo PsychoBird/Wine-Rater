@@ -42,6 +42,7 @@ async function loadUserReviews() {
         userReviews.forEach(review => {
             let newDiv = document.createElement("div");
             newDiv.classList.add("review-box");
+            newDiv.classList.add("with-button");
 
             let reviewInfo = document.createElement("div");
             reviewInfo.className = "review-meta";
