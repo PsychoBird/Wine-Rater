@@ -339,6 +339,8 @@ app.post("/add-new-review", async (req, res) => {
   let wineName = body["wineName"]
   let postDescription = body["postDescription"];
   let score = body["score"];
+  let country = body["country"];
+  let year = body["year"];
 
   let arr = [userID, wineName, postDescription, score];
 
@@ -352,15 +354,24 @@ app.post("/add-new-review", async (req, res) => {
               VALUES($1, $2, $3, $4)
               RETURNING *`, arr);
 
-          await pool.query(
-            `INSERT INTO global_wine_db (wine_name, country_origin, year, average_score)
-            VALUES ($1, 'x', 1, $2)`,
-            [wineName, score]
-          );
+          let dup = await checkForDupWineInGlobalList(wineName, country, year);
+          if (dup) {
+            console.log("Updating average score");
+            updateAverageScore(wineName, country, year);
+          } else {
+            console.log("Adding new wine to global DB");
+            await pool.query(
+              `INSERT INTO global_wine_db (wine_name, country_origin, year, average_score)
+              VALUES ($1, $2, $3, $4)`,
+              [wineName, country, year, score]
+            );
+            await addToPersonalList(username, wineName, country, year, postDescription);
+          }
 
           return res.status(200).send('ok u got it');
       } catch (error) {
-          return res.status(500).send('something else went wrong');
+        console.log(error);
+        return res.status(500).send('something else went wrong');
       }
   }
 });
@@ -486,28 +497,59 @@ app.get("/get-global-wines", async (req, res) => {
   }
 });
 
+app.listen(port, hostname, () => {
+  console.log(`App listening at http://localhost:${port}.`)
+})
 
-// Post a New Wine to User's Personal List
-app.post("/add-to-personal-list", async (req, res) => {
-  console.log("Received request to add wine to user's personal list");
-  let { token } = req.cookies;
-  let username = tokenStorage[token];
+// Utility Functions
 
-  let body = req.body;
-  console.log("Request sent to Get Wine List with body: ", body);
-  let country = body["country_origin"];
-  let year = body["year"];
-  let wine = body["wine_name"];
-  let description = body["description"] ?? null;
+async function checkForDupWineInGlobalList(wine_name, country, year) {
+  try {
+    let result = await pool.query(
+      `SELECT average_score FROM global_wine_db 
+      WHERE wine_name = $1
+        AND country_origin = $2 
+        AND year = $3`,
+      [wine_name.trim(), country.trim(), parseInt(year, 0)]
+    );
 
-  if (!country || year === undefined || year === null || !wine) {
-    res.status(400).send("Request body missing required information. Needs wine_name, country_origin, and year.");
+    console.log(result.rows.length);
+    return result.rows.length > 0;
+  } catch (error) {
+    throw error;
   }
+}
 
+async function updateAverageScore(wine_name, country, year) {
+  let arr = [wine_name, country, year];
+
+  try {
+    let result = await pool.query(
+      `UPDATE global_wine_db g
+      SET average_score = sub.average_score
+      FROM (
+        SELECT ROUND(AVG(r.score))::INT as average_score
+        FROM reviews r
+        WHERE r.wine_name = $1
+      ) sub
+       WHERE g.wine_name = $1
+        AND  g.country_origin = $2
+        AND  g.year = $3;`
+      , arr
+    );
+
+    console.log(`Successfully updated average score for ${wine_name}`)
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function addToPersonalList(username, wine_name, country, year, description = null) {
+  console.log("Received request to add wine to user's personal list");
   try {
     let queryText = "INSERT INTO saved_wines(username, wine_name, country_origin, year";
     let valuesText = "VALUES($1, $2, $3, $4"
-    let arr = [username, wine, country, year];
+    let arr = [username, wine_name, country, year];
     if (description) {
       queryText += ", description) ";
       valuesText += ", $5)";
@@ -519,35 +561,11 @@ app.post("/add-to-personal-list", async (req, res) => {
     let finalQuery = queryText + valuesText + "RETURNING *";
 
     let result = await pool.query(`${finalQuery}`, arr);
-    res.status(200).json({
-      message: "Successfully added new wine.",
-      wine: result.rows[0]
-    });
+    console.log("Successfully added new wine to personal list: ", result.rows[0]);
   } catch (error) {
     if (error.code === "1062") { // Duplicate entry error code for MariaDB
-      return res.status(409).send("This wine is already in your list.");
+      console.log("This wine is already in your list.");
     }
     console.error("INSERT Failed: ", error);
-    res.status(500).send(error);
-  }
-});
-
-app.listen(port, hostname, () => {
-  console.log(`Example app listening on port ${port}`)
-})
-
-// Utility Functions
-
-async function checkForDupWineInGlobalList(wine_name, country, year) {
-  try {
-    let result = await pool.query(
-      `SELECT average_score FROM global_wine_db WHERE wine_name = $1
-      country_origin = $2 year = $3`,
-      [wine_name, country, year]
-    );
-
-    return !(result.rows.length === 0)
-  } catch (error) {
-    throw error;
   }
 }

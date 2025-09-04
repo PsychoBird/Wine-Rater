@@ -22,6 +22,8 @@
             <thead>
                 <tr>
                     <th>Name</th>
+                    <th>Country</th>
+                    <th>Year</th>
                     <th>Score</th>
                 </tr>
             </thead>
@@ -67,6 +69,8 @@
                     let row = document.createElement("tr");
                     row.innerHTML = `
                         <td>${wine.wine_name}</td>
+                        <td>${wine.country_origin}</td>
+                        <td>${wine.year}</td>
                         <td>${wine.average_score}</td>
                     `;
                     tbody.appendChild(row);
