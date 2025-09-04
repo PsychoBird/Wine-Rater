@@ -354,19 +354,23 @@ app.post("/add-new-review", async (req, res) => {
               VALUES($1, $2, $3, $4)
               RETURNING *`, arr);
 
-          if (checkForDupWineInGlobalList(wineName,)) {
+          let dup = await checkForDupWineInGlobalList(wineName, country, year);
+          if (dup) {
+            console.log("Updating average score");
+            updateAverageScore(wineName, country, year);
+          } else {
+            console.log("Adding new wine to global DB");
             await pool.query(
               `INSERT INTO global_wine_db (wine_name, country_origin, year, average_score)
               VALUES ($1, $2, $3, $4)`,
               [wineName, country, year, score]
             );
-          } else {
-            updateAverageScore(wine_name, country, year)
           }
 
           return res.status(200).send('ok u got it');
       } catch (error) {
-          return res.status(500).send('something else went wrong');
+        console.log(error);
+        return res.status(500).send('something else went wrong');
       }
   }
 });
@@ -551,10 +555,11 @@ async function checkForDupWineInGlobalList(wine_name, country, year) {
       WHERE wine_name = $1
         AND country_origin = $2 
         AND year = $3`,
-      [wine_name, country, year]
+      [wine_name.trim(), country.trim(), parseInt(year, 0)]
     );
 
-    return !(result.rows.length === 0)
+    console.log(result.rows.length);
+    return result.rows.length > 0;
   } catch (error) {
     throw error;
   }
@@ -566,9 +571,9 @@ async function updateAverageScore(wine_name, country, year) {
   try {
     let result = await pool.query(
       `UPDATE global_wine_db g
-      SET average_score = sub.avg_score
+      SET average_score = sub.average_score
       FROM (
-        SELECT ROUND(AVG(r.score))::INT
+        SELECT ROUND(AVG(r.score))::INT as average_score
         FROM reviews r
         WHERE r.wine_name = $1
       ) sub
@@ -577,6 +582,8 @@ async function updateAverageScore(wine_name, country, year) {
         AND  g.year = $3;`
       , arr
     );
+
+    console.log(`Successfully updated average score for ${wine_name}`)
   } catch (error) {
     throw error;
   }
