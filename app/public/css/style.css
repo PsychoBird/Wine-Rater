@@ -238,9 +238,15 @@ body {
     border-radius: 16px;
     padding: 30px;
     width: 100%;
+    max-width: 1000px;
     box-shadow: 0 8px 20px rgba(41, 9, 12);
-    margin-bottom: 50px;
+    margin: 0 auto 50px auto;
     position: relative;
+}
+
+.review-box.with-button {
+  position: relative;
+  padding-bottom: 60px;
 }
 
 .review-meta {
